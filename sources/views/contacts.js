@@ -5,12 +5,43 @@ export default class Contacts extends JetView {
 	config() {
 		const list = {
 			view: "list",
-			template: "#title#",
+			template: ({Photo, FirstName, LastName, Company}) => `
+			<div class="contact__item">
+				<div class="contact__photo">
+					<img src=${Photo} alt="Photo">
+				</div>
+				<div class="contact__name">
+					<div>${FirstName} ${LastName}</div>
+					<div>${Company}</div>
+				</div>
+			</div>
+			`,
 			select: true,
 			data: [
-				{id: 1, title: "Item 1"},
-				{id: 2, title: "Item 2"},
-				{id: 3, title: "Item 3"}
+				{
+					id: 1,
+					FirstName: "Nelly",
+					LastName: "Anderson",
+					Company: "BBN Software",
+					Job: "Lead Developer",
+					Photo: "https://via.placeholder.com/550"
+				},
+				{
+					id: 2,
+					FirstName: "Neasdd",
+					LastName: "Andsafasfon",
+					Company: "XB Software",
+					Job: "Developer",
+					Photo: "https://via.placeholder.com/150"
+				},
+				{
+					id: 3,
+					FirstName: "33Neasdd",
+					LastName: "Xfasfon",
+					Company: "ASD Software",
+					Job: "JSSD",
+					Photo: "https://via.placeholder.com/150"
+				}
 			]
 		};
 

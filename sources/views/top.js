@@ -1,4 +1,5 @@
 import {JetView, plugins} from "webix-jet";
+import "../styles/menu.css";
 
 export default class TopView extends JetView {
 	config() {
@@ -14,15 +15,15 @@ export default class TopView extends JetView {
 			view: "menu",
 			localId: "menu",
 			id: "top:menu",
-			css: "app_menu",
+			css: "main-menu",
 			width: 150,
 			layout: "y",
 			select: true,
 			template: "<span class='webix_icon #icon#'></span> #value# ",
 			data: [
-				{value: "Contacts", id: "contacts", icon: "wxi-pencil"},
-				{value: "Activities", id: "activities", icon: "wxi-columns"},
-				{value: "Settings", id: "settings", icon: "wxi-pencil"}
+				{value: "Contacts", id: "contacts", icon: "fas fa-users", css: "menu__icon"},
+				{value: "Activities", id: "activities", icon: "fas fa-table"},
+				{value: "Settings", id: "settings", icon: "fas fa-cogs"}
 			]
 		};
 
