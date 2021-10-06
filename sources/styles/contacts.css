@@ -1,6 +1,5 @@
 .info {
 	display: flex;
-	height: 100%;
 }
 
 .info__block {
@@ -31,13 +30,12 @@
 }
 
 .info__item {
-	width: 150px;
+	max-width: 200px;
 	height: 30px;
-	border: 1px solid #000;
 }
 
 
-.info__label .webix_el_box {
+.info__label  .webix_template {
 	font-size: 30px;
 }
 

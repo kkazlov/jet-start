@@ -17,12 +17,18 @@ export default class Contacts extends JetView {
 		const infoHead = {
 			type: "clean",
 			margin: 10,
-			paddingX: 12,
 			cols: [
 				{
-					view: "label",
-					label: "Label",
-					labelPosition: "top",
+					borderless: true,
+					autoheight: true,
+					data: [
+						{
+							id: 1,
+							FirstName: "Nelly",
+							LastName: "Anderson"
+						}
+					],
+					template: ({FirstName, LastName}) => `${FirstName} ${LastName}`,
 					css: "info__label"
 				},
 				{},
@@ -67,11 +73,19 @@ export default class Contacts extends JetView {
 					StartDate: "2001-04-18"
 				}
 			],
-			template: obj => `
+			template: ({
+				Photo,
+				Email,
+				Skype,
+				Job,
+				Company,
+				Birthday,
+				Address
+			}) => `
 				<div class="info">
 					<div class="info__block">
 						<div class="info__photo">
-							<img src=${obj.Photo} alt="photo">
+							<img src=${Photo} alt="photo">
 						</div>
 
 						<div class="info__status">
@@ -80,16 +94,37 @@ export default class Contacts extends JetView {
 						</div>
 					</div>
 
+
 					<div class="info__items">
-						<div class="info__item">Item1</div>
-						<div class="info__item">Item2</div>
-						<div class="info__item">Item3</div>
-						<div class="info__item">Item4</div>
-						<div class="info__item">Item5</div>
-						<div class="info__item">Item6</div>
-						<div class="info__item">Item7</div>
-						<div class="info__item">Item8</div>
-						<div class="info__item">Item9</div>
+						<div class="info__item">
+							<span class="fas fa-envelope"></span>
+							<span>Email: ${Email}</span>
+						</div>
+
+						<div class="info__item">
+							<span class="fab fa-skype"></span>
+							<span>Skype: ${Skype}</span>
+						</div>
+
+						<div class="info__item">
+							<span class="fas fa-tag"></span>
+							<span>Job: ${Job}</span>
+						</div>
+
+						<div class="info__item">
+							<span class="fas fa-briefcase"></span>
+							<span>Company: ${Company}</span>
+						</div>
+
+						<div class="info__item">
+							<span class="far fa-calendar-alt"></span>
+							<span>Date of birth: ${Birthday}</span>
+						</div>
+
+						<div class="info__item">
+							<span class="fas fa-map-marker-alt"></span>
+							<span>Location: ${Address}</span>
+						</div>
 					</div>
 				</div>
 			`
