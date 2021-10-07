@@ -32,7 +32,10 @@ export default class Activities extends JetView {
 					id: "check",
 					header: "",
 					fillspace: 1,
-					template: "{common.checkbox()}",
+					template: ({State}) => {
+						const checked = State === "Close" ? "checked" : "";
+						return `<input class="webix_table_checkbox" type="checkbox" ${checked}>`;
+					},
 					css: {"text-align": "center"}
 				},
 				{
@@ -80,10 +83,10 @@ export default class Activities extends JetView {
 					webix
 						.confirm({
 							title: "Delete",
-							text: "Do you want delete this record?"
+							text: "Do you want delete this record? Deleting cannot be undone."
 						})
 						.then(() => {
-							this.remove(id);
+							activitiesDB.remove(id);
 						});
 				}
 			},
@@ -102,7 +105,15 @@ export default class Activities extends JetView {
 		this._popup = this.ui(PopupView);
 		const btn = this.$$("addBtn");
 		const table = this.$$("table");
+
 		activitiesDB.waitData.then(() => table.parse(activitiesDB));
+
 		btn.attachEvent("onItemClick", () => this._popup.showWindow());
+
+		table.attachEvent("onCheck", (row, col, state) => {
+			const _state = state ? "Close" : "Open";
+			const activity = activitiesDB.getItem(row);
+			activitiesDB.updateItem(row, {...activity, State: _state});
+		});
 	}
 }

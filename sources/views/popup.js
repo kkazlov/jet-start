@@ -1,5 +1,7 @@
 import {JetView} from "webix-jet";
 
+import {activityTypesDB, contactsDB} from "../models/dataCollections";
+
 export default class PopupView extends JetView {
 	config() {
 		const details = {
@@ -13,14 +15,39 @@ export default class PopupView extends JetView {
 			view: "combo",
 			label: "Type",
 			name: "Type",
-			options: ["One", "Two", "Three"]
+			options: {
+				filter: (item, value) =>
+					item.Value.toString()
+						.toLowerCase()
+						.indexOf(value.toLowerCase()) !== -1,
+
+				body: {
+					data: activityTypesDB,
+					template: "#Value#"
+				}
+			}
 		};
 
 		const contact = {
 			view: "combo",
 			label: "Contact",
 			name: "Contact",
-			options: ["One", "Two", "Three"]
+			options: {
+				filter: (item, value) => {
+					const {FirstName, LastName} = item;
+					const firstName = FirstName.toLowerCase();
+					const lastName = LastName.toLowerCase();
+
+					return (
+						firstName.indexOf(value) !== -1 ||
+						lastName.indexOf(value) !== -1
+					);
+				},
+				body: {
+					data: contactsDB,
+					template: "#FirstName# #LastName#"
+				}
+			}
 		};
 
 		const date = {
