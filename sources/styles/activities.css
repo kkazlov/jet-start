@@ -2,4 +2,11 @@
 	background: rgb(240, 240, 240);
 }
 
+.activiti-table .webix_table_checkbox {
+	cursor: pointer;
+}
+
+.table-icon {
+	cursor: pointer;
+}
 

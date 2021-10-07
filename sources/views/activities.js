@@ -1,6 +1,12 @@
 import {JetView} from "webix-jet";
 
+import {
+	activitiesDB,
+	activityTypesDB,
+	contactsDB
+} from "../models/dataCollections";
 import PopupView from "./popup";
+
 import "../styles/activities.css";
 
 export default class Activities extends JetView {
@@ -29,23 +35,43 @@ export default class Activities extends JetView {
 					template: "{common.checkbox()}",
 					css: {"text-align": "center"}
 				},
-				{id: "activity", header: "Activity type", fillspace: 3},
-				{id: "date", header: "Due date", fillspace: 2},
-				{id: "details", header: "Details", fillspace: 6},
-				{id: "contact", header: "Contact", fillspace: 3},
+				{
+					id: "ActivityType",
+					header: "Activity type",
+					fillspace: 3,
+					template: ({TypeID}) => {
+						const activityType = activityTypesDB.getItem(TypeID);
+						const {Value, Icon} = activityType;
+						return `${Value} <span class='fas fa-${Icon}'></span>`;
+					}
+				},
+				{id: "DueDate", header: "Due date", fillspace: 3},
+				{id: "Details", header: "Details", fillspace: 6},
+				{
+					id: "Contact",
+					header: "Contact",
+					fillspace: 3,
+					template: ({ContactID}) => {
+						const contact = contactsDB.getItem(ContactID);
+						const {FirstName, LastName} = contact;
+						return `${FirstName} ${LastName}`;
+					}
+				},
 				{
 					id: "edit",
 					header: "",
 					fillspace: 1,
 					css: {"text-align": "center"},
-					template: () => "<span class='far fa-edit onEdit'></span>"
+					template: () =>
+						"<span class='far fa-edit onEdit table-icon'></span>"
 				},
 				{
 					id: "delete",
 					header: "",
 					fillspace: 1,
 					css: {"text-align": "center"},
-					template: () => "<span class='far fa-trash-alt onDelete'></span>"
+					template: () =>
+						"<span class='far fa-trash-alt onDelete table-icon'></span>"
 				}
 			],
 
@@ -60,16 +86,23 @@ export default class Activities extends JetView {
 							this.remove(id);
 						});
 				}
+			},
+
+			ready: function () {
+				this.refresh();
 			}
 		};
 
 		return {
-			rows: [{cols: [{}, addBtn]}, table]
+			rows: [{paddingX: 15, paddingY: 5, cols: [{}, addBtn]}, table]
 		};
 	}
 
 	init() {
 		this._popup = this.ui(PopupView);
-		this.$$("addBtn").attachEvent("onFocus", () => this.blur());
+		const btn = this.$$("addBtn");
+		const table = this.$$("table");
+		activitiesDB.waitData.then(() => table.parse(activitiesDB));
+		btn.attachEvent("onItemClick", () => this._popup.showWindow());
 	}
 }
