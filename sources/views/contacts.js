@@ -45,6 +45,26 @@ export default class Contacts extends JetView {
 			]
 		};
 
+		const btnDelete = {
+			view: "button",
+			type: "icon",
+			width: 120,
+			height: 50,
+			icon: "far fa-trash-alt",
+			label: "Delete",
+			css: "info__btn"
+		};
+
+		const btnEdit = {
+			view: "button",
+			type: "icon",
+			width: 120,
+			height: 50,
+			icon: "far fa-edit",
+			label: "Edit",
+			css: "info__btn"
+		};
+
 		const infoHead = {
 			type: "clean",
 			margin: 10,
@@ -63,24 +83,8 @@ export default class Contacts extends JetView {
 					css: "info__label"
 				},
 				{},
-				{
-					view: "button",
-					type: "icon",
-					width: 120,
-					height: 50,
-					icon: "far fa-trash-alt",
-					label: "Delete",
-					css: "info__btn"
-				},
-				{
-					view: "button",
-					type: "icon",
-					width: 120,
-					height: 50,
-					icon: "far fa-edit",
-					label: "Edit",
-					css: "info__btn"
-				}
+				btnDelete,
+				btnEdit
 			]
 		};
 

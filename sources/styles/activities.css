@@ -1,0 +1,5 @@
+.activiti-table [aria-rowindex]:nth-child(odd) {
+	background: rgb(240, 240, 240);
+}
+
+
