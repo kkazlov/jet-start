@@ -5,15 +5,16 @@ import "../styles/activities.css";
 
 export default class Activities extends JetView {
 	config() {
-		const btnAdd = {
+		const addBtn = {
 			view: "button",
+			localId: "addBtn",
 			type: "icon",
 			width: 150,
 			height: 50,
 			icon: "fas fa-plus-square",
 			label: "Add activity",
-			css: "info__btn",
-			click: () => this._jetPopup.showWindow()
+			css: "customBtn",
+			click: () => this._popup.showWindow()
 		};
 
 		const table = {
@@ -63,11 +64,12 @@ export default class Activities extends JetView {
 		};
 
 		return {
-			rows: [{cols: [{}, btnAdd]}, table]
+			rows: [{cols: [{}, addBtn]}, table]
 		};
 	}
 
 	init() {
-		this._jetPopup = this.ui(PopupView);
+		this._popup = this.ui(PopupView);
+		this.$$("addBtn").attachEvent("onFocus", () => this.blur());
 	}
 }

@@ -70,15 +70,5 @@
 	font-size: 30px;
 }
 
-.info__btn .webix_button {
-	border: 1px solid #000;
-	border-radius: 5px;
-	background: none;
 
-	color: #000
-}
-
-.info__btn .webix_button .webix_icon_btn {
-	color: #000
-}
 

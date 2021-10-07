@@ -52,7 +52,7 @@ export default class Contacts extends JetView {
 			height: 50,
 			icon: "far fa-trash-alt",
 			label: "Delete",
-			css: "info__btn"
+			css: "customBtn"
 		};
 
 		const btnEdit = {
@@ -62,7 +62,7 @@ export default class Contacts extends JetView {
 			height: 50,
 			icon: "far fa-edit",
 			label: "Edit",
-			css: "info__btn"
+			css: "customBtn"
 		};
 
 		const infoHead = {

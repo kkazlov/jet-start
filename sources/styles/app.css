@@ -56,3 +56,17 @@
 	font-size:20px;
 	vertical-align:middle;
 }
+
+
+.customBtn .webix_button {
+	border: 1px solid #000;
+	border-radius: 5px;
+	background: none;
+
+	color: #000
+}
+
+
+.customBtn .webix_button .webix_icon_btn {
+	color: #000
+}
