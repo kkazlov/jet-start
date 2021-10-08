@@ -56,8 +56,12 @@ export default class Contacts extends JetView {
 					localId: "infoTitle",
 					borderless: true,
 					autoheight: true,
-					template: ({FirstName, LastName}) => `${FirstName} ${LastName}`,
-					css: "info__label"
+					template: ({FirstName, LastName}) =>
+						`${FirstName} ${LastName}`,
+					css: "info__label",
+					ready: function () {
+						this.refresh();
+					}
 				},
 				{},
 				btnDelete,

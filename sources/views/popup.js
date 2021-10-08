@@ -1,6 +1,10 @@
 import {JetView} from "webix-jet";
 
-import {activityTypesDB, contactsDB} from "../models/dataCollections";
+import {
+	activitiesDB,
+	activityTypesDB,
+	contactsDB
+} from "../models/dataCollections";
 
 export default class PopupView extends JetView {
 	config() {
@@ -13,8 +17,9 @@ export default class PopupView extends JetView {
 
 		const type = {
 			view: "combo",
+			localId: "typeCombo",
 			label: "Type",
-			name: "Type",
+			name: "TypeID",
 			options: {
 				filter: (item, value) =>
 					item.Value.toString()
@@ -31,7 +36,8 @@ export default class PopupView extends JetView {
 		const contact = {
 			view: "combo",
 			label: "Contact",
-			name: "Contact",
+			name: "ContactID",
+			localId: "contactsCombo",
 			options: {
 				filter: (item, value) => {
 					const {FirstName, LastName} = item;
@@ -53,8 +59,7 @@ export default class PopupView extends JetView {
 		const date = {
 			view: "datepicker",
 			label: "Date",
-			name: "Date",
-			value: new Date()
+			name: "Date"
 		};
 
 		const time = {
@@ -62,19 +67,18 @@ export default class PopupView extends JetView {
 			type: "time",
 			label: "Time",
 			name: "Time",
-			value: new Date(),
 			labelAlign: "right"
 		};
 
 		const completed = {
 			view: "checkbox",
 			label: "Completed",
-			name: "Completed",
-			value: 1
+			name: "State"
 		};
 
 		const addBtn = {
 			view: "button",
+			localId: "addBtn",
 			width: 120,
 			value: "Add",
 			css: "customBtn"
@@ -95,6 +99,7 @@ export default class PopupView extends JetView {
 			width: 600,
 			body: {
 				view: "form",
+				localId: "form",
 				elements: [
 					details,
 					type,
@@ -102,9 +107,52 @@ export default class PopupView extends JetView {
 					{cols: [date, time]},
 					completed,
 					{margin: 10, cols: [{}, addBtn, cancelBtn]}
-				]
+				],
+				rules: {
+					Details: webix.rules.isNotEmpty,
+					TypeID: webix.rules.isNotEmpty,
+					ContactID: webix.rules.isNotEmpty
+				},
+				elementsConfig: {
+					invalidMessage: "Enter the correct value!",
+					on: {
+						onFocus: () => {
+							this.$$("form").clearValidation();
+						}
+					}
+				}
 			}
 		};
+	}
+
+	init() {
+		this.$$("addBtn").attachEvent("onItemClick", () => {
+			const form = this.$$("form");
+			const value = form.getValues();
+			const {Date: dateValue, Time: timeValue, State: stateValue} = value;
+
+			const dataFormat = webix.Date.dateToStr("%Y-%m-%d");
+			const timeFormat = webix.Date.dateToStr("%H:%i");
+			const date = dataFormat(dateValue);
+			const time = timeFormat(timeValue);
+
+			const DueDate = `${date} ${time}`;
+			const state = stateValue ? "Close" : "Open";
+
+			const dataObj = {...value, DueDate, State: state};
+			delete dataObj.Time;
+			delete dataObj.Date;
+
+			const validation = form.validate();
+
+			if (validation) {
+				activitiesDB.waitSave(() => {
+					activitiesDB.add(dataObj);
+				});
+				this.hideWindow();
+				form.clear();
+			}
+		});
 	}
 
 	showWindow() {

@@ -42,8 +42,9 @@ export default class Activities extends JetView {
 					id: "ActivityType",
 					header: "Activity type",
 					fillspace: 3,
-					template: ({TypeID}) => {
-						const activityType = activityTypesDB.getItem(TypeID);
+					collection: activityTypesDB,
+					template: function ({TypeID}) {
+						const activityType = this.collection.getItem(TypeID) || {Value: "", Icon: ""};
 						const {Value, Icon} = activityType;
 						return `${Value} <span class='fas fa-${Icon}'></span>`;
 					}
@@ -54,8 +55,12 @@ export default class Activities extends JetView {
 					id: "Contact",
 					header: "Contact",
 					fillspace: 3,
-					template: ({ContactID}) => {
-						const contact = contactsDB.getItem(ContactID);
+					collection: contactsDB,
+					template: function ({ContactID}) {
+						const contact = this.collection.getItem(ContactID) || {
+							FirstName: "",
+							LastName: ""
+						};
 						const {FirstName, LastName} = contact;
 						return `${FirstName} ${LastName}`;
 					}
