@@ -32,7 +32,22 @@ export default class Activities extends JetView {
 				const checked = State === "Close" ? "checked" : "";
 				return `<input class="webix_table_checkbox" type="checkbox" ${checked}>`;
 			},
-			css: {"text-align": "center"}
+			css: {"text-align": "center"},
+			sort: function sortByParam(a, b) {
+				const aState = a.State;
+				const bState = b.State;
+
+				return aState > bState ? 1 : aState < bState ? -1 : 0;
+			}
+		};
+
+		const activitySort = (a, b) => {
+			const AtypeID = a.TypeID;
+			const BtypeID = b.TypeID;
+			const AtypeName = activityTypesDB.getItem(AtypeID).Value;
+			const BtypeName = activityTypesDB.getItem(BtypeID).Value;
+
+			return AtypeName > BtypeName ? 1 : AtypeName < BtypeName ? -1 : 0;
 		};
 
 		const activityTypeCol = {
@@ -47,6 +62,7 @@ export default class Activities extends JetView {
 				}
 			],
 			fillspace: 3,
+			sort: activitySort,
 
 			collection: activityTypesDB,
 			template: function ({TypeID}) {
@@ -78,20 +94,37 @@ export default class Activities extends JetView {
 					}
 				}
 			],
+			sort: function sortByParam(a, b) {
+				
+				const aDate = a.DueDate;
+				const bDate = b.DueDate;
 
+				return aDate > bDate ? 1 : aDate < bDate ? -1 : 0;
+			},
+			
 			fillspace: 3
 		};
 
 		const detailsCol = {
 			id: "Details",
 			header: ["Details", {content: "textFilter"}],
+			sort: "string",
 			fillspace: 6
+		};
+
+		const contactSort = (a, b) => {
+			const AContactID = a.ContactID;
+			const BContactID = b.ContactID;
+			const AtypeName = contactsDB.getItem(AContactID).value;
+			const BtypeName = contactsDB.getItem(BContactID).value;
+
+			return AtypeName > BtypeName ? 1 : AtypeName < BtypeName ? -1 : 0;
 		};
 
 		const contactCol = {
 			id: "Contact",
 			header: [
-				"Activity Type",
+				"Contacts",
 				{
 					content: "selectFilter",
 					compare: function (cellValue, filterValue, obj) {
@@ -99,6 +132,7 @@ export default class Activities extends JetView {
 					}
 				}
 			],
+			sort: contactSort,
 			fillspace: 3,
 			collection: contactsDB,
 			template: function ({ContactID}) {
