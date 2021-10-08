@@ -1,12 +1,42 @@
 import {JetView} from "webix-jet";
 
-import {activitiesDB, activityTypesDB, contactsDB} from "../models/dataCollections";
+import {
+	activitiesDB,
+	activityTypesDB,
+	contactsDB
+} from "../models/dataCollections";
 import PopupConstr from "./popup-constr";
 
 import "../styles/activities.css";
 
 export default class Activities extends JetView {
 	config() {
+		const customSort = (a, b) => (a > b ? 1 : a < b ? -1 : 0);
+
+		const activitySort = (a, b) => {
+			const aValue = activityTypesDB.getItem(a.TypeID).Value;
+			const bValue = activityTypesDB.getItem(b.TypeID).Value;
+			return customSort(aValue, bValue);
+		};
+
+		const checkSort = (a, b) => {
+			const aValue = a.State;
+			const bValue = b.State;
+			return customSort(aValue, bValue);
+		};
+
+		const dateSort = (a, b) => {
+			const aValue = a.DueDate;
+			const bValue = b.DueDate;
+			return customSort(aValue, bValue);
+		};
+
+		const contactSort = (a, b) => {
+			const aValue = contactsDB.getItem(a.ContactID).value;
+			const bValue = contactsDB.getItem(b.ContactID).value;
+			return customSort(aValue, bValue);
+		};
+
 		const addBtn = {
 			view: "button",
 			localId: "addBtn",
@@ -28,21 +58,7 @@ export default class Activities extends JetView {
 				return `<input class="webix_table_checkbox" type="checkbox" ${checked}>`;
 			},
 			css: {"text-align": "center"},
-			sort: function sortByParam(a, b) {
-				const aState = a.State;
-				const bState = b.State;
-
-				return aState > bState ? 1 : aState < bState ? -1 : 0;
-			}
-		};
-
-		const activitySort = (a, b) => {
-			const AtypeID = a.TypeID;
-			const BtypeID = b.TypeID;
-			const AtypeName = activityTypesDB.getItem(AtypeID).Value;
-			const BtypeName = activityTypesDB.getItem(BtypeID).Value;
-
-			return AtypeName > BtypeName ? 1 : AtypeName < BtypeName ? -1 : 0;
+			sort: checkSort
 		};
 
 		const activityTypeCol = {
@@ -58,7 +74,6 @@ export default class Activities extends JetView {
 			],
 			fillspace: 3,
 			sort: activitySort,
-
 			collection: activityTypesDB,
 			template: function ({TypeID}) {
 				const activityType = this.collection.getItem(TypeID) || {
@@ -89,12 +104,7 @@ export default class Activities extends JetView {
 					}
 				}
 			],
-			sort: function sortByParam(a, b) {
-				const aDate = a.DueDate;
-				const bDate = b.DueDate;
-
-				return aDate > bDate ? 1 : aDate < bDate ? -1 : 0;
-			},
+			sort: dateSort,
 
 			fillspace: 3
 		};
@@ -104,15 +114,6 @@ export default class Activities extends JetView {
 			header: ["Details", {content: "textFilter"}],
 			sort: "string",
 			fillspace: 6
-		};
-
-		const contactSort = (a, b) => {
-			const AContactID = a.ContactID;
-			const BContactID = b.ContactID;
-			const AtypeName = contactsDB.getItem(AContactID).value;
-			const BtypeName = contactsDB.getItem(BContactID).value;
-
-			return AtypeName > BtypeName ? 1 : AtypeName < BtypeName ? -1 : 0;
 		};
 
 		const contactCol = {
@@ -144,8 +145,7 @@ export default class Activities extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () =>
-				"<span class='far fa-edit onEdit table-icon'></span>"
+			template: () => "<span class='far fa-edit onEdit table-icon'></span>"
 		};
 
 		const deleteCol = {
@@ -153,8 +153,7 @@ export default class Activities extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () =>
-				"<span class='far fa-trash-alt onDelete table-icon'></span>"
+			template: () => "<span class='far fa-trash-alt onDelete table-icon'></span>"
 		};
 
 		const table = {
