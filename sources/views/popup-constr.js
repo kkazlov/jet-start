@@ -26,10 +26,8 @@ export default class PopupConstr extends JetView {
 			label: "Type",
 			name: "TypeID",
 			options: {
-				filter: (item, value) =>
-					item.Value.toString()
-						.toLowerCase()
-						.indexOf(value.toLowerCase()) !== -1,
+				filter: (item, value) => item.Value.toString().toLowerCase()
+					.indexOf(value.toLowerCase()) !== -1,
 
 				body: {
 					data: activityTypesDB,
@@ -162,7 +160,8 @@ export default class PopupConstr extends JetView {
 				activitiesDB.waitSave(() => {
 					if (this._popupType === "Add") {
 						activitiesDB.add(dataObj);
-					} else {
+					}
+					else {
 						activitiesDB.updateItem(this._id, dataObj);
 					}
 				});
