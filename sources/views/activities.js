@@ -24,75 +24,123 @@ export default class Activities extends JetView {
 			click: () => this._popup.showWindow()
 		};
 
+		const checkCol = {
+			id: "check",
+			header: "",
+			fillspace: 1,
+			template: ({State}) => {
+				const checked = State === "Close" ? "checked" : "";
+				return `<input class="webix_table_checkbox" type="checkbox" ${checked}>`;
+			},
+			css: {"text-align": "center"}
+		};
+
+		const activityTypeCol = {
+			id: "ActivityType",
+			header: [
+				"Activity Type",
+				{
+					content: "selectFilter",
+					compare: function (cellValue, filterValue, obj) {
+						return obj.TypeID == filterValue;
+					}
+				}
+			],
+			fillspace: 3,
+
+			collection: activityTypesDB,
+			template: function ({TypeID}) {
+				const activityType = this.collection.getItem(TypeID) || {
+					value: "",
+					Icon: ""
+				};
+				const {Value, Icon} = activityType;
+				return `${Value} <span class='fas fa-${Icon}'></span>`;
+			}
+		};
+
+		const dueDateCol = {
+			id: "DueDate",
+			header: [
+				"Due date",
+				{
+					content: "datepickerFilter",
+					prepare: (filterValue) => {
+						const newValue = webix.i18n.dateFormatStr(filterValue);
+
+						return newValue;
+					},
+					compare: (cellValue, filterValue) => {
+						const pareseDate = new Date(Date.parse(cellValue));
+						const newValue = webix.i18n.dateFormatStr(pareseDate);
+
+						return newValue === filterValue;
+					}
+				}
+			],
+
+			fillspace: 3
+		};
+
+		const detailsCol = {
+			id: "Details",
+			header: ["Details", {content: "textFilter"}],
+			fillspace: 6
+		};
+
+		const contactCol = {
+			id: "Contact",
+			header: [
+				"Activity Type",
+				{
+					content: "selectFilter",
+					compare: function (cellValue, filterValue, obj) {
+						return obj.ContactID == filterValue;
+					}
+				}
+			],
+			fillspace: 3,
+			collection: contactsDB,
+			template: function ({ContactID}) {
+				const contact = this.collection.getItem(ContactID) || {
+					FirstName: "",
+					LastName: ""
+				};
+				const {FirstName, LastName} = contact;
+				return `${FirstName} ${LastName}`;
+			}
+		};
+
+		const editCol = {
+			id: "edit",
+			header: "",
+			fillspace: 1,
+			css: {"text-align": "center"},
+			template: () =>
+				"<span class='far fa-edit onEdit table-icon'></span>"
+		};
+
+		const deleteCol = {
+			id: "delete",
+			header: "",
+			fillspace: 1,
+			css: {"text-align": "center"},
+			template: () =>
+				"<span class='far fa-trash-alt onDelete table-icon'></span>"
+		};
+
 		const table = {
 			view: "datatable",
 			localId: "table",
 			css: "webix_data_border webix_header_border activiti-table",
 			columns: [
-				{
-					id: "check",
-					header: "",
-					fillspace: 1,
-					template: ({State}) => {
-						const checked = State === "Close" ? "checked" : "";
-						return `<input class="webix_table_checkbox" type="checkbox" ${checked}>`;
-					},
-					css: {"text-align": "center"}
-				},
-				{
-					id: "ActivityType",
-					header: [
-						"Activity Type",
-						{
-							content: "selectFilter",
-							compare: function (cellValue, filterValue, obj) {
-								return obj.TypeID == filterValue;
-							}
-						}
-					],
-					fillspace: 3,
-
-					collection: activityTypesDB,
-					template: function ({TypeID}) {
-						const activityType = this.collection.getItem(
-							TypeID
-						) || {value: "", Icon: ""};
-						const {Value, Icon} = activityType;
-						return `${Value} <span class='fas fa-${Icon}'></span>`;
-					}
-				},
-				{id: "DueDate", header: "Due date", fillspace: 3},
-				{id: "Details", header: "Details", fillspace: 6},
-				{
-					id: "Contact",
-					header: "Contact",
-					fillspace: 3,
-					collection: contactsDB,
-					template: function ({ContactID}) {
-						const contact = this.collection.getItem(ContactID) || {
-							FirstName: "",
-							LastName: ""
-						};
-						const {FirstName, LastName} = contact;
-						return `${FirstName} ${LastName}`;
-					}
-				},
-				{
-					id: "edit",
-					header: "",
-					fillspace: 1,
-					css: {"text-align": "center"},
-					template: () =>
-						"<span class='far fa-edit onEdit table-icon'></span>"
-				},
-				{
-					id: "delete",
-					header: "",
-					fillspace: 1,
-					css: {"text-align": "center"},
-					template: () =>
-						"<span class='far fa-trash-alt onDelete table-icon'></span>"
-				}
+				checkCol,
+				activityTypeCol,
+				dueDateCol,
+				detailsCol,
+				contactCol,
+				editCol,
+				deleteCol
 			],
 
 			onClick: {
