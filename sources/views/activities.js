@@ -11,7 +11,15 @@ import "../styles/activities.css";
 
 export default class Activities extends JetView {
 	config() {
-		const customSort = (a, b) => (a > b ? 1 : a < b ? -1 : 0);
+		const customSort = (a, b) => {
+			if (a > b) {
+				return 1;
+			}
+			else if (a < b) {
+				return -1;
+			}
+			return 0;
+		};
 
 		const activitySort = (a, b) => {
 			const aValue = activityTypesDB.getItem(a.TypeID).Value;
@@ -67,9 +75,7 @@ export default class Activities extends JetView {
 				"Activity Type",
 				{
 					content: "selectFilter",
-					compare: function (cellValue, filterValue, obj) {
-						return obj.TypeID == filterValue;
-					}
+					compare: (cellValue, filterValue, obj) => +obj.TypeID === +filterValue
 				}
 			],
 			fillspace: 3,
@@ -145,7 +151,8 @@ export default class Activities extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () => "<span class='far fa-edit onEdit table-icon'></span>"
+			template: () =>
+				"<span class='far fa-edit onEdit table-icon'></span>"
 		};
 
 		const deleteCol = {
@@ -153,7 +160,8 @@ export default class Activities extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () => "<span class='far fa-trash-alt onDelete table-icon'></span>"
+			template: () =>
+				"<span class='far fa-trash-alt onDelete table-icon'></span>"
 		};
 
 		const table = {
@@ -214,10 +222,10 @@ export default class Activities extends JetView {
 			activitiesDB.updateItem(row, {...activity, State: _state});
 		});
 
-		activitiesDB.data.attachEvent("onAfterAdd", () => {
+		this.on(activitiesDB.data, "onAfterAdd", () => {
 			table.filterByAll();
 		});
-		activitiesDB.data.attachEvent("onDataUpdate", () => {
+		this.on(activitiesDB.data, "onDataUpdate", () => {
 			table.filterByAll();
 		});
 	}
