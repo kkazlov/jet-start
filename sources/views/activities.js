@@ -5,6 +5,7 @@ import {
 	activityTypesDB,
 	contactsDB
 } from "../models/dataCollections";
+import PopupEdit from "./popup-edit";
 import PopupView from "./popup";
 
 import "../styles/activities.css";
@@ -93,6 +94,10 @@ export default class Activities extends JetView {
 						.then(() => {
 							activitiesDB.remove(id);
 						});
+				},
+				onEdit: (e, id) => {
+					this._popupEdit.getActivity(id);
+					this._popupEdit.showWindow();
 				}
 			},
 
@@ -108,6 +113,8 @@ export default class Activities extends JetView {
 
 	init() {
 		this._popup = this.ui(PopupView);
+		this._popupEdit = this.ui(PopupEdit);
+		
 		const btn = this.$$("addBtn");
 		const table = this.$$("table");
 

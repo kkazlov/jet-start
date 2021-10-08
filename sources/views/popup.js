@@ -58,6 +58,7 @@ export default class PopupView extends JetView {
 
 		const date = {
 			view: "datepicker",
+			format: "%d %M %Y",
 			label: "Date",
 			name: "Date"
 		};
@@ -66,6 +67,7 @@ export default class PopupView extends JetView {
 			view: "datepicker",
 			type: "time",
 			label: "Time",
+			format: "%H:%i",
 			name: "Time",
 			labelAlign: "right"
 		};
@@ -111,7 +113,9 @@ export default class PopupView extends JetView {
 				rules: {
 					Details: webix.rules.isNotEmpty,
 					TypeID: webix.rules.isNotEmpty,
-					ContactID: webix.rules.isNotEmpty
+					ContactID: webix.rules.isNotEmpty,
+					Date: webix.rules.isNotEmpty,
+					Time: webix.rules.isNotEmpty
 				},
 				elementsConfig: {
 					invalidMessage: "Enter the correct value!",
