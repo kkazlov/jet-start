@@ -81,7 +81,7 @@ export default class Activities extends JetView {
 			fillspace: 3,
 			sort: activitySort,
 			collection: activityTypesDB,
-			template: function ({TypeID}) {
+			template({TypeID}) {
 				const activityType = this.collection.getItem(TypeID) || {
 					value: "",
 					Icon: ""
@@ -128,15 +128,15 @@ export default class Activities extends JetView {
 				"Contacts",
 				{
 					content: "selectFilter",
-					compare: function (cellValue, filterValue, obj) {
-						return obj.ContactID == filterValue;
+					compare(cellValue, filterValue, obj) {
+						return +obj.ContactID === +filterValue;
 					}
 				}
 			],
 			sort: contactSort,
 			fillspace: 3,
 			collection: contactsDB,
-			template: function ({ContactID}) {
+			template({ContactID}) {
 				const contact = this.collection.getItem(ContactID) || {
 					FirstName: "",
 					LastName: ""
@@ -151,8 +151,7 @@ export default class Activities extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () =>
-				"<span class='far fa-edit onEdit table-icon'></span>"
+			template: () => "<span class='far fa-edit onEdit table-icon'></span>"
 		};
 
 		const deleteCol = {
@@ -160,8 +159,7 @@ export default class Activities extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () =>
-				"<span class='far fa-trash-alt onDelete table-icon'></span>"
+			template: () => "<span class='far fa-trash-alt onDelete table-icon'></span>"
 		};
 
 		const table = {
@@ -179,7 +177,7 @@ export default class Activities extends JetView {
 			],
 
 			onClick: {
-				onDelete: function (e, id) {
+				onDelete(e, id) {
 					webix
 						.confirm({
 							title: "Delete",
@@ -195,7 +193,7 @@ export default class Activities extends JetView {
 				}
 			},
 
-			ready: function () {
+			ready() {
 				this.refresh();
 			}
 		};
