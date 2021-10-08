@@ -1,12 +1,7 @@
 import {JetView} from "webix-jet";
 
-import {
-	activitiesDB,
-	activityTypesDB,
-	contactsDB
-} from "../models/dataCollections";
-import PopupEdit from "./popup-edit";
-import PopupView from "./popup";
+import {activitiesDB, activityTypesDB, contactsDB} from "../models/dataCollections";
+import PopupConstr from "./popup-constr";
 
 import "../styles/activities.css";
 
@@ -95,13 +90,12 @@ export default class Activities extends JetView {
 				}
 			],
 			sort: function sortByParam(a, b) {
-				
 				const aDate = a.DueDate;
 				const bDate = b.DueDate;
 
 				return aDate > bDate ? 1 : aDate < bDate ? -1 : 0;
 			},
-			
+
 			fillspace: 3
 		};
 
@@ -205,8 +199,8 @@ export default class Activities extends JetView {
 	}
 
 	init() {
-		this._popup = this.ui(PopupView);
-		this._popupEdit = this.ui(PopupEdit);
+		this._popup = this.ui(new PopupConstr(this.app, "Add"));
+		this._popupEdit = this.ui(new PopupConstr(this.app, "Edit"));
 
 		const btn = this.$$("addBtn");
 		const table = this.$$("table");

@@ -6,7 +6,12 @@ import {
 	contactsDB
 } from "../models/dataCollections";
 
-export default class PopupEdit extends JetView {
+export default class PopupConstr extends JetView {
+	constructor(app, popupType) {
+		super(app);
+		this._popupType = popupType;
+	}
+
 	config() {
 		const details = {
 			view: "textarea",
@@ -61,6 +66,7 @@ export default class PopupEdit extends JetView {
 			localId: "date",
 			format: "%d %M %Y",
 			label: "Date",
+			value: new Date(),
 			name: "Date"
 		};
 
@@ -68,8 +74,9 @@ export default class PopupEdit extends JetView {
 			view: "datepicker",
 			localId: "time",
 			type: "time",
-			format: "%H:%i",
 			label: "Time",
+			format: "%H:%i",
+			value: new Date(),
 			name: "Time",
 			labelAlign: "right"
 		};
@@ -80,11 +87,11 @@ export default class PopupEdit extends JetView {
 			name: "State"
 		};
 
-		const editBtn = {
+		const actionBtn = {
 			view: "button",
-			localId: "editBtn",
+			localId: "actionBtn",
 			width: 120,
-			value: "Edit",
+			value: this._popupType,
 			css: "customBtn"
 		};
 
@@ -99,7 +106,7 @@ export default class PopupEdit extends JetView {
 		return {
 			view: "window",
 			position: "center",
-			head: "Edit",
+			head: this._popupType,
 			width: 600,
 			body: {
 				view: "form",
@@ -110,7 +117,7 @@ export default class PopupEdit extends JetView {
 					contact,
 					{cols: [date, time]},
 					completed,
-					{margin: 10, cols: [{}, editBtn, cancelBtn]}
+					{margin: 10, cols: [{}, actionBtn, cancelBtn]}
 				],
 				rules: {
 					Details: webix.rules.isNotEmpty,
@@ -132,7 +139,7 @@ export default class PopupEdit extends JetView {
 	}
 
 	init() {
-		this.$$("editBtn").attachEvent("onItemClick", () => {
+		this.$$("actionBtn").attachEvent("onItemClick", () => {
 			const form = this.$$("form");
 			const value = form.getValues();
 			const {Date: dateValue, Time: timeValue, State: stateValue} = value;
@@ -153,10 +160,17 @@ export default class PopupEdit extends JetView {
 
 			if (validation) {
 				activitiesDB.waitSave(() => {
-					activitiesDB.updateItem(this._id, dataObj);
+					if (this._popupType === "Add") {
+						activitiesDB.add(dataObj);
+					} else {
+						activitiesDB.updateItem(this._id, dataObj);
+					}
 				});
+
 				this.hideWindow();
 				form.clear();
+				this.$$("time").setValue(new Date());
+				this.$$("date").setValue(new Date());
 			}
 		});
 	}
