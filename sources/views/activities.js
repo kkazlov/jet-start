@@ -41,11 +41,22 @@ export default class Activities extends JetView {
 				},
 				{
 					id: "ActivityType",
-					header: "Activity type",
+					header: [
+						"Activity Type",
+						{
+							content: "selectFilter",
+							compare: function (cellValue, filterValue, obj) {
+								return obj.TypeID == filterValue;
+							}
+						}
+					],
 					fillspace: 3,
+
 					collection: activityTypesDB,
 					template: function ({TypeID}) {
-						const activityType = this.collection.getItem(TypeID) || {Value: "", Icon: ""};
+						const activityType = this.collection.getItem(
+							TypeID
+						) || {value: "", Icon: ""};
 						const {Value, Icon} = activityType;
 						return `${Value} <span class='fas fa-${Icon}'></span>`;
 					}
@@ -114,7 +125,7 @@ export default class Activities extends JetView {
 	init() {
 		this._popup = this.ui(PopupView);
 		this._popupEdit = this.ui(PopupEdit);
-		
+
 		const btn = this.$$("addBtn");
 		const table = this.$$("table");
 
@@ -126,6 +137,13 @@ export default class Activities extends JetView {
 			const _state = state ? "Close" : "Open";
 			const activity = activitiesDB.getItem(row);
 			activitiesDB.updateItem(row, {...activity, State: _state});
+		});
+
+		activitiesDB.data.attachEvent("onAfterAdd", () => {
+			table.filterByAll();
+		});
+		activitiesDB.data.attachEvent("onDataUpdate", () => {
+			table.filterByAll();
 		});
 	}
 }

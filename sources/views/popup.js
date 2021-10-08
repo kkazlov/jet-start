@@ -58,16 +58,20 @@ export default class PopupView extends JetView {
 
 		const date = {
 			view: "datepicker",
+			localId: "date",
 			format: "%d %M %Y",
 			label: "Date",
+			value: new Date(),
 			name: "Date"
 		};
 
 		const time = {
 			view: "datepicker",
+			localId: "time",
 			type: "time",
 			label: "Time",
 			format: "%H:%i",
+			value: new Date(),
 			name: "Time",
 			labelAlign: "right"
 		};
@@ -155,6 +159,8 @@ export default class PopupView extends JetView {
 				});
 				this.hideWindow();
 				form.clear();
+				this.$$('time').setValue(new Date());
+				this.$$('date').setValue(new Date());
 			}
 		});
 	}
