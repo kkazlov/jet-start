@@ -21,27 +21,15 @@ export default class Activities extends JetView {
 			return 0;
 		};
 
-		const activitySort = (a, b) => {
-			const aValue = activityTypesDB.getItem(a.TypeID).Value;
-			const bValue = activityTypesDB.getItem(b.TypeID).Value;
+		const checkAndDateSort = (a, b, field) => {
+			const aValue = a[field];
+			const bValue = b[field];
 			return customSort(aValue, bValue);
 		};
 
-		const checkSort = (a, b) => {
-			const aValue = a.State;
-			const bValue = b.State;
-			return customSort(aValue, bValue);
-		};
-
-		const dateSort = (a, b) => {
-			const aValue = a.DueDate;
-			const bValue = b.DueDate;
-			return customSort(aValue, bValue);
-		};
-
-		const contactSort = (a, b) => {
-			const aValue = contactsDB.getItem(a.ContactID).value;
-			const bValue = contactsDB.getItem(b.ContactID).value;
+		const activityAndContactSort = ({a, b, db, id, field}) => {
+			const aValue = db.getItem(a[id])[field];
+			const bValue = db.getItem(b[id])[field];
 			return customSort(aValue, bValue);
 		};
 
@@ -61,12 +49,12 @@ export default class Activities extends JetView {
 			id: "check",
 			header: "",
 			fillspace: 1,
+			css: {"text-align": "center"},
+			sort: (a, b) => checkAndDateSort(a, b, "State"),
 			template: ({State}) => {
 				const checked = State === "Close" ? "checked" : "";
 				return `<input class="webix_table_checkbox" type="checkbox" ${checked}>`;
-			},
-			css: {"text-align": "center"},
-			sort: checkSort
+			}
 		};
 
 		const activityTypeCol = {
@@ -79,7 +67,7 @@ export default class Activities extends JetView {
 				}
 			],
 			fillspace: 3,
-			sort: activitySort,
+			sort: (a, b) => activityAndContactSort({a, b, db: activityTypesDB, id: "TypeID", field: "Value"}),
 			collection: activityTypesDB,
 			template({TypeID}) {
 				const activityType = this.collection.getItem(TypeID) || {
@@ -110,9 +98,8 @@ export default class Activities extends JetView {
 					}
 				}
 			],
-			sort: dateSort,
-
-			fillspace: 3
+			fillspace: 3,
+			sort: (a, b) => checkAndDateSort(a, b, "DueDate")
 		};
 
 		const detailsCol = {
@@ -133,7 +120,7 @@ export default class Activities extends JetView {
 					}
 				}
 			],
-			sort: contactSort,
+			sort: (a, b) => activityAndContactSort({a, b, db: contactsDB, id: "ContactID", field: "value"}),
 			fillspace: 3,
 			collection: contactsDB,
 			template({ContactID}) {

@@ -26,9 +26,6 @@ export default class PopupConstr extends JetView {
 			label: "Type",
 			name: "TypeID",
 			options: {
-				filter: (item, value) => item.Value.toString().toLowerCase()
-					.indexOf(value.toLowerCase()) !== -1,
-
 				body: {
 					data: activityTypesDB,
 					template: "#Value#"
@@ -42,16 +39,6 @@ export default class PopupConstr extends JetView {
 			name: "ContactID",
 			localId: "contactsCombo",
 			options: {
-				filter: (item, value) => {
-					const {FirstName, LastName} = item;
-					const firstName = FirstName.toLowerCase();
-					const lastName = LastName.toLowerCase();
-
-					return (
-						firstName.indexOf(value) !== -1 ||
-						lastName.indexOf(value) !== -1
-					);
-				},
 				body: {
 					data: contactsDB,
 					template: "#FirstName# #LastName#"
@@ -98,7 +85,12 @@ export default class PopupConstr extends JetView {
 			width: 120,
 			value: "Cancel",
 			css: "customBtn",
-			click: () => this.hideWindow()
+			click: () => {
+				this.hideWindow();
+				this.$$("form").clear();
+				this.$$("time").setValue(new Date());
+				this.$$("date").setValue(new Date());
+			}
 		};
 
 		return {
