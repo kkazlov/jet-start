@@ -1,10 +1,8 @@
 import {JetView} from "webix-jet";
 
-import {
-	activitiesDB,
-	activityTypesDB,
-	contactsDB
-} from "../models/dataCollections";
+import activitiesDB from "../models/activitiesDB";
+import activityTypesDB from "../models/activityTypesDB";
+import contactsDB from "../models/contactsDB";
 
 export default class PopupConstr extends JetView {
 	constructor(app, popupType) {
@@ -69,7 +67,7 @@ export default class PopupConstr extends JetView {
 		const completed = {
 			view: "checkbox",
 			label: "Completed",
-			name: "State"
+			name: "check"
 		};
 
 		const actionBtn = {
@@ -132,7 +130,8 @@ export default class PopupConstr extends JetView {
 		this.$$("actionBtn").attachEvent("onItemClick", () => {
 			const form = this.$$("form");
 			const value = form.getValues();
-			const {Date: dateValue, Time: timeValue, State: stateValue} = value;
+			const {Date: dateValue, Time: timeValue, check} = value;
+
 
 			const dataFormat = webix.Date.dateToStr("%Y-%m-%d");
 			const timeFormat = webix.Date.dateToStr("%H:%i");
@@ -140,9 +139,9 @@ export default class PopupConstr extends JetView {
 			const time = timeFormat(timeValue);
 
 			const DueDate = `${date} ${time}`;
-			const state = stateValue ? "Close" : "Open";
+			const State = check ? "Close" : "Open";
 
-			const dataObj = {...value, DueDate, State: state};
+			const dataObj = {...value, DueDate, State};
 			delete dataObj.Time;
 			delete dataObj.Date;
 

@@ -1,10 +1,8 @@
 import {JetView} from "webix-jet";
 
-import {
-	activitiesDB,
-	activityTypesDB,
-	contactsDB
-} from "../models/dataCollections";
+import activitiesDB from "../models/activitiesDB";
+import activityTypesDB from "../models/activityTypesDB";
+import contactsDB from "../models/contactsDB";
 import PopupConstr from "./popup-constr";
 
 import "../styles/activities.css";
@@ -51,10 +49,11 @@ export default class Activities extends JetView {
 			fillspace: 1,
 			css: {"text-align": "center"},
 			sort: (a, b) => checkAndDateSort(a, b, "State"),
-			template: ({State}) => {
+			template: "{common.checkbox()}"
+			/* template: ({State}) => {
 				const checked = State === "Close" ? "checked" : "";
 				return `<input class="webix_table_checkbox" type="checkbox" ${checked}>`;
-			}
+			} */
 		};
 
 		const activityTypeCol = {
@@ -152,7 +151,7 @@ export default class Activities extends JetView {
 		const table = {
 			view: "datatable",
 			localId: "table",
-			css: "webix_data_border webix_header_border activiti-table",
+			css: "webix_data_border webix_header_border activity-table",
 			columns: [
 				checkCol,
 				activityTypeCol,
@@ -168,7 +167,7 @@ export default class Activities extends JetView {
 					webix
 						.confirm({
 							title: "Delete",
-							text: "Do you want delete this record? Deleting cannot be undone."
+							text: "Do you want to delete this record? Deleting cannot be undone."
 						})
 						.then(() => {
 							activitiesDB.remove(id);
@@ -178,10 +177,6 @@ export default class Activities extends JetView {
 					this._popupEdit.getActivity(id);
 					this._popupEdit.showWindow();
 				}
-			},
-
-			ready() {
-				this.refresh();
 			}
 		};
 
@@ -200,12 +195,6 @@ export default class Activities extends JetView {
 		activitiesDB.waitData.then(() => table.parse(activitiesDB));
 
 		btn.attachEvent("onItemClick", () => this._popup.showWindow());
-
-		table.attachEvent("onCheck", (row, col, state) => {
-			const _state = state ? "Close" : "Open";
-			const activity = activitiesDB.getItem(row);
-			activitiesDB.updateItem(row, {...activity, State: _state});
-		});
 
 		this.on(activitiesDB.data, "onAfterAdd", () => {
 			table.filterByAll();

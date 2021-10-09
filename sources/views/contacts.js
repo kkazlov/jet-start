@@ -1,7 +1,9 @@
 import {JetView} from "webix-jet";
+
+import contactsDB from "../models/contactsDB";
+import statusesDB from "../models/statusesDB";
 import "../styles/contacts.css";
 
-import {contactsDB, statusesDB} from "../models/dataCollections";
 
 export default class Contacts extends JetView {
 	config() {
@@ -152,25 +154,28 @@ export default class Contacts extends JetView {
 
 	init() {
 		const list = this.$$("list");
-		list.parse(contactsDB);
 
 		contactsDB.waitData.then(() => {
+			list.parse(contactsDB);
 			const initSelect = list.getFirstId();
 			list.select(initSelect);
 		});
+	}
 
-		list.attachEvent("onAfterSelect", (id) => {
+	ready() {
+		const list = this.$$("list");
+		this.on(list, "onAfterSelect", (id) => {
 			const title = this.$$("infoTitle");
 			const main = this.$$("infoMain");
 
 			const contact = contactsDB.getItem(id);
 			const statusID = contact.StatusID;
-
-			const status = statusesDB.getItem(statusID).Value;
-			const icon = statusesDB.getItem(statusID).Icon;
-
+			statusesDB.waitData.then(() => {
+				const status = statusesDB.getItem(statusID).Value;
+				const icon = statusesDB.getItem(statusID).Icon;
+				main.setValues({Status: status, StatusIcon: icon}, true);
+			});
 			main.parse(contact);
-			main.setValues({Status: status, StatusIcon: icon}, true);
 			title.parse(contact);
 		});
 	}
