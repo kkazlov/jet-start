@@ -10,11 +10,9 @@ export default class Contacts extends JetView {
 		const list = {
 			view: "list",
 			localId: "list",
+			minWidth: 200,
 			template: ({Photo, FirstName, LastName, Company}) => {
-				const _photo = !Photo
-					? "https://via.placeholder.com/550"
-					: Photo;
-
+				const _photo = Photo || "https://via.placeholder.com/550";
 				return `
 				<div class="contact__item">
 					<div class="contact__photo">
@@ -70,6 +68,54 @@ export default class Contacts extends JetView {
 			]
 		};
 
+		const infoMain = {
+			localId: "infoMain",
+			borderless: true,
+			template: this.infoTemplate()
+		};
+
+		return {
+			cols: [
+				list,
+				{
+					gravity: 3,
+					padding: 15,
+					margin: 30,
+					type: "clean",
+					rows: [infoHead, infoMain, {}]
+				}
+			]
+		};
+	}
+
+	init() {
+		const list = this.$$("list");
+
+		contactsDB.waitData.then(() => {
+			list.parse(contactsDB);
+			const initSelect = list.getFirstId();
+			list.select(initSelect);
+		});
+	}
+
+	ready() {
+		const list = this.$$("list");
+		this.on(list, "onAfterSelect", (id) => {
+			const title = this.$$("infoTitle");
+			const main = this.$$("infoMain");
+
+			const contact = contactsDB.getItem(id);
+			const statusID = contact.StatusID;
+			statusesDB.waitData.then(() => {
+				const statuses = statusesDB.getItem(statusID);
+				const {Value: status, Icon: icon} = statuses;
+				main.setValues({...contact, Status: status, StatusIcon: icon}, true);
+			});
+			title.parse(contact);
+		});
+	}
+
+	infoTemplate() {
 		const infoTemplate = ({
 			Photo,
 			Email,
@@ -81,7 +127,7 @@ export default class Contacts extends JetView {
 			Status = "No status",
 			StatusIcon = ""
 		}) => {
-			const _photo = !Photo ? "https://via.placeholder.com/550" : Photo;
+			const _photo = Photo || "https://via.placeholder.com/550";
 
 			return `
 			<div class="info">
@@ -131,52 +177,6 @@ export default class Contacts extends JetView {
 			</div>
 		`;
 		};
-
-		const infoMain = {
-			localId: "infoMain",
-			borderless: true,
-			template: infoTemplate
-		};
-
-		return {
-			cols: [
-				list,
-				{
-					gravity: 3,
-					padding: 15,
-					margin: 30,
-					type: "clean",
-					rows: [infoHead, infoMain, {}]
-				}
-			]
-		};
-	}
-
-	init() {
-		const list = this.$$("list");
-
-		contactsDB.waitData.then(() => {
-			list.parse(contactsDB);
-			const initSelect = list.getFirstId();
-			list.select(initSelect);
-		});
-	}
-
-	ready() {
-		const list = this.$$("list");
-		this.on(list, "onAfterSelect", (id) => {
-			const title = this.$$("infoTitle");
-			const main = this.$$("infoMain");
-
-			const contact = contactsDB.getItem(id);
-			const statusID = contact.StatusID;
-			statusesDB.waitData.then(() => {
-				const status = statusesDB.getItem(statusID).Value;
-				const icon = statusesDB.getItem(statusID).Icon;
-				main.setValues({Status: status, StatusIcon: icon}, true);
-			});
-			main.parse(contact);
-			title.parse(contact);
-		});
+		return infoTemplate;
 	}
 }

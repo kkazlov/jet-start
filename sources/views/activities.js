@@ -202,5 +202,8 @@ export default class Activities extends JetView {
 		this.on(activitiesDB.data, "onDataUpdate", () => {
 			table.filterByAll();
 		});
+		this.on(activitiesDB.data, "onAfterDelete", () => {
+			table.filterByAll();
+		});
 	}
 }
