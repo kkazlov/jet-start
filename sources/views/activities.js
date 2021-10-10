@@ -3,44 +3,24 @@ import {JetView} from "webix-jet";
 import activitiesDB from "../models/activitiesDB";
 import activityTypesDB from "../models/activityTypesDB";
 import contactsDB from "../models/contactsDB";
-import PopupConstr from "./popup-constr";
+import Popup from "./popup";
 
 import "../styles/activities.css";
 
 export default class Activities extends JetView {
 	config() {
-		const customSort = (a, b) => {
-			if (a > b) {
-				return 1;
-			}
-			else if (a < b) {
-				return -1;
-			}
-			return 0;
-		};
-
-		const checkAndDateSort = (a, b, field) => {
-			const aValue = a[field];
-			const bValue = b[field];
-			return customSort(aValue, bValue);
-		};
-
-		const activityAndContactSort = ({a, b, db, id, field}) => {
-			const aValue = db.getItem(a[id])[field];
-			const bValue = db.getItem(b[id])[field];
-			return customSort(aValue, bValue);
-		};
-
 		const addBtn = {
 			view: "button",
-			localId: "addBtn",
+			id: "addBtn",
 			type: "icon",
 			width: 150,
 			height: 50,
 			icon: "fas fa-plus-square",
 			label: "Add activity",
 			css: "customBtn",
-			click: () => this._popup.showWindow()
+			click: () => {
+				this._popup.showWindow();
+			}
 		};
 
 		const checkCol = {
@@ -48,12 +28,8 @@ export default class Activities extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			sort: (a, b) => checkAndDateSort(a, b, "State"),
+			sort: "int",
 			template: "{common.checkbox()}"
-			/* template: ({State}) => {
-				const checked = State === "Close" ? "checked" : "";
-				return `<input class="webix_table_checkbox" type="checkbox" ${checked}>`;
-			} */
 		};
 
 		const activityTypeCol = {
@@ -66,7 +42,7 @@ export default class Activities extends JetView {
 				}
 			],
 			fillspace: 3,
-			sort: (a, b) => activityAndContactSort({a, b, db: activityTypesDB, id: "TypeID", field: "Value"}),
+			sort: "string",
 			collection: activityTypesDB,
 			template({TypeID}) {
 				const activityType = this.collection.getItem(TypeID) || {
@@ -98,7 +74,7 @@ export default class Activities extends JetView {
 				}
 			],
 			fillspace: 3,
-			sort: (a, b) => checkAndDateSort(a, b, "DueDate")
+			sort: "string"
 		};
 
 		const detailsCol = {
@@ -119,7 +95,7 @@ export default class Activities extends JetView {
 					}
 				}
 			],
-			sort: (a, b) => activityAndContactSort({a, b, db: contactsDB, id: "ContactID", field: "value"}),
+			sort: "string",
 			fillspace: 3,
 			collection: contactsDB,
 			template({ContactID}) {
@@ -137,7 +113,7 @@ export default class Activities extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () => "<span class='far fa-edit onEdit table-icon'></span>"
+			template: () => "<span class='far fa-edit editIcon table-icon'></span>"
 		};
 
 		const deleteCol = {
@@ -145,7 +121,7 @@ export default class Activities extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () => "<span class='far fa-trash-alt onDelete table-icon'></span>"
+			template: () => "<span class='far fa-trash-alt deleteIcon table-icon'></span>"
 		};
 
 		const table = {
@@ -163,7 +139,7 @@ export default class Activities extends JetView {
 			],
 
 			onClick: {
-				onDelete(e, id) {
+				deleteIcon(e, id) {
 					webix
 						.confirm({
 							title: "Delete",
@@ -173,9 +149,8 @@ export default class Activities extends JetView {
 							activitiesDB.remove(id);
 						});
 				},
-				onEdit: (e, id) => {
-					this._popupEdit.getActivity(id);
-					this._popupEdit.showWindow();
+				editIcon: (e, id) => {
+					this._popup.showWindow(id);
 				}
 			}
 		};
@@ -186,15 +161,9 @@ export default class Activities extends JetView {
 	}
 
 	init() {
-		this._popup = this.ui(new PopupConstr(this.app, "Add"));
-		this._popupEdit = this.ui(new PopupConstr(this.app, "Edit"));
-
-		const btn = this.$$("addBtn");
+		this._popup = this.ui(Popup);
 		const table = this.$$("table");
-
-		activitiesDB.waitData.then(() => table.parse(activitiesDB));
-
-		btn.attachEvent("onItemClick", () => this._popup.showWindow());
+		table.parse(activitiesDB);
 
 		this.on(activitiesDB.data, "onAfterAdd", () => {
 			table.filterByAll();

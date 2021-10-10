@@ -4,15 +4,11 @@ import activitiesDB from "../models/activitiesDB";
 import activityTypesDB from "../models/activityTypesDB";
 import contactsDB from "../models/contactsDB";
 
-export default class PopupConstr extends JetView {
-	constructor(app, popupType) {
-		super(app);
-		this._popupType = popupType;
-	}
-
+export default class Popup extends JetView {
 	config() {
 		const details = {
 			view: "textarea",
+			localId: "Details",
 			label: "Details",
 			name: "Details",
 			height: 100
@@ -74,7 +70,6 @@ export default class PopupConstr extends JetView {
 			view: "button",
 			localId: "actionBtn",
 			width: 120,
-			value: this._popupType,
 			css: "customBtn"
 		};
 
@@ -85,16 +80,14 @@ export default class PopupConstr extends JetView {
 			css: "customBtn",
 			click: () => {
 				this.hideWindow();
-				this.$$("form").clear();
-				this.$$("time").setValue(new Date());
-				this.$$("date").setValue(new Date());
 			}
 		};
 
 		return {
 			view: "window",
+			localId: "window",
 			position: "center",
-			head: this._popupType,
+			head: "Add",
 			width: 600,
 			body: {
 				view: "form",
@@ -117,7 +110,7 @@ export default class PopupConstr extends JetView {
 				elementsConfig: {
 					invalidMessage: "Enter the correct value!",
 					on: {
-						onFocus: () => {
+						onChange: () => {
 							this.$$("form").clearValidation();
 						}
 					}
@@ -158,19 +151,41 @@ export default class PopupConstr extends JetView {
 				});
 
 				this.hideWindow();
-				form.clear();
-				this.$$("time").setValue(new Date());
-				this.$$("date").setValue(new Date());
 			}
 		});
+
+		const details = this.$$("Details");
+		this.on(details, "onFocus", () => this.$$("form").clearValidation());
 	}
 
-	showWindow() {
+	showWindow(id) {
+		if (id) {
+			this._popupType = "Edit";
+			this.getActivity(id);
+		}
+		else {
+			this._popupType = "Add";
+		}
+
+		this.$$("actionBtn").setValue(this._popupType);
+
+		const head = this.$$("window").getHead();
+		head.$view.innerText = this._popupType;
+
 		this.getRoot().show();
 	}
 
 	hideWindow() {
 		this.getRoot().hide();
+
+		const form = this.$$("form");
+		form.clear();
+		form.clearValidation();
+
+		this.$$("time").setValue(new Date());
+		this.$$("date").setValue(new Date());
+
+		$$("addBtn").blur();
 	}
 
 	getActivity(id) {
