@@ -11,7 +11,6 @@ export default class Activities extends JetView {
 	config() {
 		const addBtn = {
 			view: "button",
-			id: "addBtn",
 			type: "icon",
 			width: 150,
 			height: 50,
@@ -44,7 +43,7 @@ export default class Activities extends JetView {
 				}
 			],
 			fillspace: 3,
-			sort: "string",
+			sort: "text",
 			collection: activityTypesDB,
 			template({TypeID}) {
 				const activityType = this.collection.getItem(TypeID) || {
@@ -57,26 +56,11 @@ export default class Activities extends JetView {
 		};
 
 		const dueDateCol = {
-			id: "DueDate",
-			header: [
-				"Due date",
-				{
-					content: "datepickerFilter",
-					prepare: (filterValue) => {
-						const newValue = webix.i18n.dateFormatStr(filterValue);
-
-						return newValue;
-					},
-					compare: (cellValue, filterValue) => {
-						const pareseDate = new Date(Date.parse(cellValue));
-						const newValue = webix.i18n.dateFormatStr(pareseDate);
-
-						return newValue === filterValue;
-					}
-				}
-			],
+			id: "Date",
+			header: ["Due date", {content: "datepickerFilter"}],
 			fillspace: 3,
-			sort: "string"
+			sort: "string",
+			format: webix.i18n.longDateFormatStr
 		};
 
 		const detailsCol = {
@@ -97,7 +81,7 @@ export default class Activities extends JetView {
 					}
 				}
 			],
-			sort: "string",
+			sort: "text",
 			fillspace: 3,
 			collection: contactsDB,
 			template({ContactID}) {

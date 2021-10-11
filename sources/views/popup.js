@@ -8,7 +8,6 @@ export default class Popup extends JetView {
 	config() {
 		const details = {
 			view: "textarea",
-			localId: "Details",
 			label: "Details",
 			name: "Details",
 			height: 100
@@ -153,9 +152,6 @@ export default class Popup extends JetView {
 				this.hideWindow();
 			}
 		});
-
-		const details = this.$$("Details");
-		this.on(details, "onFocus", () => this.$$("form").clearValidation());
 	}
 
 	showWindow(id) {
@@ -184,7 +180,6 @@ export default class Popup extends JetView {
 
 		this.$$("time").setValue(new Date());
 		this.$$("date").setValue(new Date());
-		webix.$$("addBtn").blur();
 	}
 
 	getActivity(id) {
