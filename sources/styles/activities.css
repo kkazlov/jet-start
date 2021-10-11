@@ -1,0 +1,12 @@
+.activity-table [aria-rowindex]:nth-child(odd) {
+	background: rgb(240, 240, 240);
+}
+
+.activity-table .webix_table_checkbox {
+	cursor: pointer;
+}
+
+.table-icon {
+	cursor: pointer;
+}
+
