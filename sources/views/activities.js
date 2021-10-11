@@ -165,14 +165,8 @@ export default class Activities extends JetView {
 		const table = this.$$("table");
 		table.parse(activitiesDB);
 
-		this.on(activitiesDB.data, "onAfterAdd", () => {
-			table.filterByAll();
-		});
-		this.on(activitiesDB.data, "onDataUpdate", () => {
-			table.filterByAll();
-		});
-		this.on(activitiesDB.data, "onAfterDelete", () => {
-			table.filterByAll();
+		this.on(activitiesDB.data, "onStoreUpdated", (id) => {
+			if (id) table.filterByAll();
 		});
 	}
 }

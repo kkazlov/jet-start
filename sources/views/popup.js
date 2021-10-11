@@ -108,11 +108,11 @@ export default class Popup extends JetView {
 					Time: webix.rules.isNotEmpty
 				},
 				elementsConfig: {
-					invalidMessage: "Enter the correct value!",
-					on: {
-						onChange: () => {
-							this.$$("form").clearValidation();
-						}
+					invalidMessage: "Enter the correct value!"
+				},
+				on: {
+					onChange: () => {
+						this.$$("form").clearValidation();
 					}
 				}
 			}
@@ -184,8 +184,7 @@ export default class Popup extends JetView {
 
 		this.$$("time").setValue(new Date());
 		this.$$("date").setValue(new Date());
-
-		$$("addBtn").blur();
+		webix.$$("addBtn").blur();
 	}
 
 	getActivity(id) {
