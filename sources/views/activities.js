@@ -47,7 +47,7 @@ export default class Activities extends JetView {
 			collection: activityTypesDB,
 			template({TypeID}) {
 				const activityType = this.collection.getItem(TypeID) || {
-					value: "",
+					Value: "",
 					Icon: ""
 				};
 				const {Value, Icon} = activityType;
@@ -89,8 +89,7 @@ export default class Activities extends JetView {
 					FirstName: "",
 					LastName: ""
 				};
-				const {FirstName, LastName} = contact;
-				return `${FirstName} ${LastName}`;
+				return `${contact.value}`;
 			}
 		};
 
