@@ -63,7 +63,9 @@ export default class Popup extends JetView {
 		const completed = {
 			view: "checkbox",
 			label: "Completed",
-			name: "check"
+			name: "State",
+			checkValue: "Close",
+			uncheckValue: "Open"
 		};
 
 		const actionBtn = {
@@ -123,8 +125,7 @@ export default class Popup extends JetView {
 		this.$$("actionBtn").attachEvent("onItemClick", () => {
 			const form = this.$$("form");
 			const value = form.getValues();
-			const {Date: dateValue, Time: timeValue, check} = value;
-
+			const {Date: dateValue, Time: timeValue} = value;
 
 			const dataFormat = webix.Date.dateToStr("%Y-%m-%d");
 			const timeFormat = webix.Date.dateToStr("%H:%i");
@@ -132,9 +133,8 @@ export default class Popup extends JetView {
 			const time = timeFormat(timeValue);
 
 			const DueDate = `${date} ${time}`;
-			const State = check ? "Close" : "Open";
 
-			const dataObj = {...value, DueDate, State};
+			const dataObj = {...value, DueDate};
 			delete dataObj.Time;
 			delete dataObj.Date;
 
@@ -193,11 +193,10 @@ export default class Popup extends JetView {
 
 		activitiesDB.waitData.then(() => {
 			const value = activitiesDB.getItem(id);
-			const {DueDate, State} = value;
-			const _state = State === "Close" ? 1 : 0;
+			const {DueDate} = value;
 			const _time = new Date(DueDate);
 			const _date = new Date(DueDate);
-			const dataObj = {...value, State: _state, Time: _time, Date: _date};
+			const dataObj = {...value, Time: _time, Date: _date};
 			delete dataObj.DueDate;
 			form.setValues(dataObj);
 		});

@@ -24,12 +24,14 @@ export default class Activities extends JetView {
 		};
 
 		const checkCol = {
-			id: "check",
+			id: "State",
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			sort: "int",
-			template: "{common.checkbox()}"
+			sort: "string",
+			template: "{common.checkbox()}",
+			checkValue: "Close",
+			uncheckValue: "Open"
 		};
 
 		const activityTypeCol = {
