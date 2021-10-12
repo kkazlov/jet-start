@@ -2,6 +2,7 @@ import {JetView} from "webix-jet";
 
 import contactsDB from "../../models/contactsDB";
 import statusesDB from "../../models/statusesDB";
+import ActivitiesTable from "./activities-table";
 import {InfoHead, InfoMain} from "./info";
 import List from "./list";
 
@@ -23,7 +24,7 @@ export default class Contacts extends JetView {
 		const Multiview = {
 			borderless: true,
 			cells: [
-				{id: "Activities", template: "Form Content"},
+				{$subview: ActivitiesTable, id: "Activities"},
 				{
 					id: "Files",
 					template: "<i>Info about the Form</i>"
