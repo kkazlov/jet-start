@@ -18,7 +18,8 @@ export default class Contacts extends JetView {
 			options: [
 				{id: "Activities", value: "Activities"},
 				{id: "Files", value: "Files"}
-			]
+			],
+			css: "custom-tabbar"
 		};
 
 		const Multiview = {
@@ -32,19 +33,23 @@ export default class Contacts extends JetView {
 			]
 		};
 
+		const AddContactBtn = {
+			view: "button",
+			type: "icon",
+			height: 40,
+			icon: "fas fa-plus-square",
+			label: "Add contact",
+			css: "customBtn"
+		};
+
 		return {
+			type: "clean",
 			cols: [
-				List,
+				{rows: [List, AddContactBtn]},
 				{
 					gravity: 3,
-					padding: 15,
-					margin: 30,
-					type: "clean",
-					rows: [
-						{rows: [InfoHead, InfoMain]},
-						Tabbar,
-						Multiview
-					]
+					paddingX: 15,
+					rows: [{rows: [InfoHead, InfoMain]}, Tabbar, Multiview]
 				}
 			]
 		};
@@ -65,6 +70,7 @@ export default class Contacts extends JetView {
 		this.on(list, "onAfterSelect", (id) => {
 			const title = this.$$("infoTitle");
 			const main = this.$$("infoMain");
+			this.setParam("id", id, true);
 
 			const contact = contactsDB.getItem(id);
 			const statusID = contact.StatusID;

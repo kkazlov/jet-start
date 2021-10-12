@@ -1,5 +1,5 @@
 .activity-table [aria-rowindex]:nth-child(odd) {
-	background: rgb(240, 240, 240);
+	background: #f0f0f0;
 }
 
 .activity-table .webix_table_checkbox {

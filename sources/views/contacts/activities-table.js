@@ -18,14 +18,10 @@ export default class ActivitiesTable extends JetView {
 
 		const activityTypeCol = {
 			id: "ActivityType",
-			header: [
-				"Activity Type",
-				{
-					content: "selectFilter",
-					compare: (cellValue, filterValue, obj) =>
-						+obj.TypeID === +filterValue
-				}
-			],
+			header: {
+				content: "selectFilter",
+				compare: (cellValue, filterValue, obj) => +obj.TypeID === +filterValue
+			},
 
 			fillspace: 3,
 			sort: "text",
@@ -42,7 +38,7 @@ export default class ActivitiesTable extends JetView {
 
 		const dueDateCol = {
 			id: "Date",
-			header: ["Due date", {content: "datepickerFilter"}],
+			header: {content: "datepickerFilter"},
 			fillspace: 3,
 			sort: "string",
 			format: webix.i18n.longDateFormatStr
@@ -50,7 +46,7 @@ export default class ActivitiesTable extends JetView {
 
 		const detailsCol = {
 			id: "Details",
-			header: ["Details", {content: "textFilter"}],
+			header: {content: "textFilter"},
 			sort: "string",
 			fillspace: 6
 		};
@@ -60,8 +56,7 @@ export default class ActivitiesTable extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () =>
-				"<span class='far fa-edit editIcon table-icon'></span>"
+			template: () => "<span class='far fa-edit editIcon table-icon'></span>"
 		};
 
 		const deleteCol = {
@@ -69,13 +64,12 @@ export default class ActivitiesTable extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () =>
-				"<span class='far fa-trash-alt deleteIcon table-icon'></span>"
+			template: () => "<span class='far fa-trash-alt deleteIcon table-icon'></span>"
 		};
 
-		return {
+		const datatable = {
 			view: "datatable",
-			localId: "table",
+			localId: "activitiesTable",
 			columns: [
 				checkCol,
 				activityTypeCol,
@@ -83,14 +77,37 @@ export default class ActivitiesTable extends JetView {
 				detailsCol,
 				editCol,
 				deleteCol
+			],
+			css: "webix_data_border webix_header_border activity-table"
+		};
+
+		return {
+			rows: [
+				datatable,
+				{
+					paddingY: 5,
+					cols: [
+						{},
+						{
+							view: "button",
+							type: "icon",
+							icon: "fas fa-plus-square",
+							width: 180,
+							height: 40,
+							label: "Add activity",
+							css: "customBtn"
+						}
+					]
+				}
 			]
 		};
 	}
 
-	init() {
-		const table = this.$$("table");
-		table.data.sync(activitiesDB, function handler() {
-			this.filter("#ContactID#", 2);
+	urlChange() {
+		const contactID = this.getParam("id");
+		const table = this.$$("activitiesTable");
+		table.data.sync(activitiesDB, function filter() {
+			this.filter("#ContactID#", contactID);
 		});
 	}
 }

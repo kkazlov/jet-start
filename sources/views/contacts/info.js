@@ -20,6 +20,7 @@ const BtnEdit = {
 
 const InfoHead = {
 	type: "clean",
+	paddingY: 10,
 	margin: 10,
 	cols: [
 		{
@@ -27,10 +28,7 @@ const InfoHead = {
 			borderless: true,
 			autoheight: true,
 			template: ({FirstName, LastName}) => `${FirstName} ${LastName}`,
-			css: "info__label",
-			ready() {
-				this.refresh();
-			}
+			css: "info__label"
 		},
 		{},
 		BtnDelete,
