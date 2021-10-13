@@ -85,7 +85,7 @@ export default class ActivitiesTable extends JetView {
 			rows: [
 				datatable,
 				{
-					paddingY: 5,
+					paddingY: 2,
 					cols: [
 						{},
 						{
