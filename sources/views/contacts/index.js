@@ -70,6 +70,7 @@ export default class Contacts extends JetView {
 	init() {
 		const list = this.$$("list");
 		this.setParam("form", false, true);
+		this.setParam("list", false, true);
 
 		contactsDB.waitData.then(() => {
 			list.parse(contactsDB);
@@ -80,6 +81,7 @@ export default class Contacts extends JetView {
 
 	urlChange(view, url) {
 		const contactFormState = url[0].params.form;
+		const listParam = url[0].params.list;
 		const contactLayout = this.$$("contactLayout");
 		const contactAddBtn = this.$$("contactAddBtn");
 		const list = this.$$("list");
@@ -93,6 +95,14 @@ export default class Contacts extends JetView {
 			contactLayout.show();
 			list.enable();
 			contactAddBtn.enable();
+		}
+
+		if (listParam) {
+			const id = listParam === "first"
+				? list.getFirstId()
+				: list.getLastId();
+			list.select(id);
+			this.setParam("list", false, true);
 		}
 	}
 

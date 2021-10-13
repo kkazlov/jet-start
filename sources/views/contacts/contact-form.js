@@ -1,5 +1,8 @@
 import {JetView} from "webix-jet";
 
+import contactsDB from "../../models/contactsDB";
+import statusesDB from "../../models/statusesDB";
+
 export default class ContactForm extends JetView {
 	config() {
 		const FirsNameElem = {
@@ -24,8 +27,12 @@ export default class ContactForm extends JetView {
 		const StatusElem = {
 			view: "combo",
 			label: "Status",
-			value: "One",
-			options: ["One", "Two", "Three"],
+			options: {
+				body: {
+					data: statusesDB,
+					template: "#Value#"
+				}
+			},
 			name: "StatusID"
 		};
 
@@ -80,15 +87,22 @@ export default class ContactForm extends JetView {
 
 		const ChangeBtn = {
 			view: "uploader",
-			id: "uploader1",
 			value: "Upload file",
-			link: "doclist",
-			upload: "http://localhost:8096/api/v1/contacts/",
-			datatype: "json",
 			css: "customBtn",
+			accept: "image/jpeg, image/png",
+			autosend: false,
+			multiple: false,
 			on: {
-				onUploadComplete: function name() {
-					console.log(webix.$$("uploader1").files.data.pull);
+				onBeforeFileAdd(upload) {
+					let file = upload.file;
+					let reader = new FileReader();
+					reader.onload = (event) => {
+						webix
+							.$$("photoTemplate")
+							.parse({Photo: event.target.result});
+					};
+					reader.readAsDataURL(file);
+					return false;
 				}
 			}
 		};
@@ -102,12 +116,15 @@ export default class ContactForm extends JetView {
 		const PhotoBlock = {
 			margin: 15,
 			cols: [
-				/* {	
-					template: "photo",
-					width: 220,
-					height: 220
-				}, */
-				{view: "list", scroll: false, id: "doclist", type: "uploader"},
+				{
+					id: "photoTemplate",
+					maxHeight: 200,
+					template: obj => `
+						<div class='photo'>
+							<img src=${obj.Photo || "https://via.placeholder.com/550"} alt='Photo'>
+						</div>
+					`
+				},
 				{
 					margin: 7,
 					type: "clean",
@@ -122,7 +139,7 @@ export default class ContactForm extends JetView {
 			width: 150,
 			css: "customBtn",
 			click: () => {
-				this.getParentView().setParam("form", false, true);
+				this.closeForm("first");
 			}
 		};
 
@@ -130,7 +147,26 @@ export default class ContactForm extends JetView {
 			view: "button",
 			width: 150,
 			label: "Add",
-			css: "customBtn"
+			css: "customBtn",
+			click: () => {
+				const form = this.$$("form");
+				if (form.validate()) {
+					const values = form.getValues();
+					const {Birthday: birthday, StartDate: startdate} = values;
+
+					const format = webix.Date.dateToStr("%Y-%m-%d");
+					const Birthday = format(birthday);
+					const StartDate = format(startdate);
+
+					const sendData = {...values, Birthday, StartDate};
+
+					contactsDB.waitSave(() => {
+						contactsDB.add(sendData);
+					}).then(() => {
+						this.closeForm("last");
+					});
+				}
+			}
 		};
 
 		const FormElements = [
@@ -138,7 +174,7 @@ export default class ContactForm extends JetView {
 				margin: 30,
 				cols: [
 					{
-						margin: 15,
+						margin: 5,
 						rows: [
 							FirsNameElem,
 							LastNameElem,
@@ -151,7 +187,7 @@ export default class ContactForm extends JetView {
 						]
 					},
 					{
-						margin: 15,
+						margin: 5,
 						rows: [
 							EmailElem,
 							SkypeElem,
@@ -165,18 +201,54 @@ export default class ContactForm extends JetView {
 			{margin: 15, cols: [{}, CancelBtn, AddBtn]}
 		];
 
+		const formRules = {
+			FirstName: webix.rules.isNotEmpty,
+			LastName: webix.rules.isNotEmpty,
+			StatusID: webix.rules.isNotEmpty,
+			StartDate: webix.rules.isNotEmpty,
+			Job: webix.rules.isNotEmpty,
+			Company: webix.rules.isNotEmpty,
+			Website: webix.rules.isNotEmpty,
+			Address: webix.rules.isNotEmpty,
+			Email: webix.rules.isNotEmpty && webix.rules.isEmail,
+			Skype: webix.rules.isNotEmpty,
+			Birthday: webix.rules.isNotEmpty,
+			Phone: webix.rules.isNotEmpty && webix.rules.isNumber
+		};
+
 		return {
 			paddingX: 10,
 			rows: [
 				{view: "label", label: "Add new contact", css: "form-label"},
 				{
 					view: "form",
+					localId: "form",
 					borderless: true,
 					margin: 15,
-					rows: FormElements
+					rows: FormElements,
+					rules: formRules,
+					elementsConfig: {
+						invalidMessage: "Enter the correct value!"
+					},
+					on: {
+						onChange: function change() {
+							this.clearValidation();
+						}
+					}
 				},
 				{}
 			]
 		};
 	}
+
+	closeForm(select) {
+		const form = this.$$("form");
+		const parentView = this.getParentView();
+		form.clear();
+		form.clearValidation();
+
+		parentView.setParam("form", false, true);
+		parentView.setParam("list", select, true);
+	}
 }
+
