@@ -1,5 +1,6 @@
 const List = {
 	view: "list",
+	id: "contactList",
 	localId: "list",
 	minWidth: 200,
 	template: ({Photo, FirstName, LastName, Company}) => {

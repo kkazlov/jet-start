@@ -26,7 +26,7 @@ export default class ContactForm extends JetView {
 			label: "Status",
 			value: "One",
 			options: ["One", "Two", "Three"],
-			name: "Status"
+			name: "StatusID"
 		};
 
 		const JobElem = {
@@ -74,15 +74,23 @@ export default class ContactForm extends JetView {
 
 		const BirthdayElem = {
 			view: "datepicker",
-			value: new Date(),
 			label: "Birthday",
 			name: "Birthday"
 		};
 
 		const ChangeBtn = {
-			view: "button",
-			label: "Change photo",
-			css: "customBtn"
+			view: "uploader",
+			id: "uploader1",
+			value: "Upload file",
+			link: "doclist",
+			upload: "http://localhost:8096/api/v1/contacts/",
+			datatype: "json",
+			css: "customBtn",
+			on: {
+				onUploadComplete: function name() {
+					console.log(webix.$$("uploader1").files.data.pull);
+				}
+			}
 		};
 
 		const DeleteBtn = {
@@ -94,11 +102,12 @@ export default class ContactForm extends JetView {
 		const PhotoBlock = {
 			margin: 15,
 			cols: [
-				{
+				/* {	
 					template: "photo",
 					width: 220,
 					height: 220
-				},
+				}, */
+				{view: "list", scroll: false, id: "doclist", type: "uploader"},
 				{
 					margin: 7,
 					type: "clean",
@@ -111,7 +120,10 @@ export default class ContactForm extends JetView {
 			view: "button",
 			label: "Cancel",
 			width: 150,
-			css: "customBtn"
+			css: "customBtn",
+			click: () => {
+				this.getParentView().setParam("form", false, true);
+			}
 		};
 
 		const AddBtn = {

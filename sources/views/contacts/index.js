@@ -34,15 +34,13 @@ export default class Contacts extends JetView {
 		const AddContactBtn = {
 			view: "button",
 			type: "icon",
-			localId: "addBtn",
+			localId: "contactAddBtn",
 			height: 40,
 			icon: "fas fa-plus-square",
 			label: "Add contact",
 			css: "customBtn",
 			click: () => {
-				webix.$$("contactForm").show();
-				this.$$("list").disable();
-				this.$$("addBtn").disable();
+				this.setParam("form", true, true);
 			}
 		};
 
@@ -55,7 +53,7 @@ export default class Contacts extends JetView {
 					paddingX: 15,
 					cells: [
 						{
-							id: "contactLayout",
+							localId: "contactLayout",
 							rows: [
 								{rows: [InfoHead, InfoMain]},
 								Tabbar,
@@ -71,16 +69,31 @@ export default class Contacts extends JetView {
 
 	init() {
 		const list = this.$$("list");
-		const contactLayout = webix.$$("contactLayout");
-
-		contactLayout.show();
-		list.enable();
+		this.setParam("form", false, true);
 
 		contactsDB.waitData.then(() => {
 			list.parse(contactsDB);
 			const initSelect = list.getFirstId();
 			list.select(initSelect);
 		});
+	}
+
+	urlChange(view, url) {
+		const contactFormState = url[0].params.form;
+		const contactLayout = this.$$("contactLayout");
+		const contactAddBtn = this.$$("contactAddBtn");
+		const list = this.$$("list");
+
+		if (contactFormState) {
+			webix.$$("contactForm").show();
+			list.disable();
+			contactAddBtn.disable();
+		}
+		else {
+			contactLayout.show();
+			list.enable();
+			contactAddBtn.enable();
+		}
 	}
 
 	ready() {
