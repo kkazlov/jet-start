@@ -19,8 +19,9 @@ export default class ContactForm extends JetView {
 
 		const StartDataElem = {
 			view: "datepicker",
+			localId: "StartDate",
 			value: new Date(),
-			label: "Joining date",
+			label: "Joining",
 			name: "StartDate"
 		};
 
@@ -154,17 +155,18 @@ export default class ContactForm extends JetView {
 					const values = form.getValues();
 					const {Birthday: birthday, StartDate: startdate} = values;
 
-					const format = webix.Date.dateToStr("%Y-%m-%d");
+					const format = webix.Date.dateToStr("%Y-%m-%d %h:%i");
 					const Birthday = format(birthday);
 					const StartDate = format(startdate);
-
 					const sendData = {...values, Birthday, StartDate};
 
-					contactsDB.waitSave(() => {
-						contactsDB.add(sendData);
-					}).then(() => {
-						this.closeForm("last");
-					});
+					contactsDB
+						.waitSave(() => {
+							contactsDB.add(sendData);
+						})
+						.then(() => {
+							this.closeForm("last");
+						});
 				}
 			}
 		};
@@ -246,9 +248,8 @@ export default class ContactForm extends JetView {
 		const parentView = this.getParentView();
 		form.clear();
 		form.clearValidation();
-
+		this.$$("StartDate").setValue(new Date());
 		parentView.setParam("form", false, true);
 		parentView.setParam("list", select, true);
 	}
 }
-

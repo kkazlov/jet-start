@@ -1,10 +1,9 @@
 import {JetView} from "webix-jet";
 
 import contactsDB from "../../models/contactsDB";
-import statusesDB from "../../models/statusesDB";
 import ActivitiesTable from "./activities-table";
 import ContactForm from "./contact-form";
-import {InfoHead, InfoMain} from "./info";
+import Info from "./info";
 import List from "./list";
 
 import "../../styles/contacts.css";
@@ -54,11 +53,7 @@ export default class Contacts extends JetView {
 					cells: [
 						{
 							localId: "contactLayout",
-							rows: [
-								{rows: [InfoHead, InfoMain]},
-								Tabbar,
-								Multiview
-							]
+							rows: [Info, Tabbar, Multiview]
 						},
 						{$subview: ContactForm, id: "contactForm"}
 					]
@@ -110,23 +105,7 @@ export default class Contacts extends JetView {
 		const list = this.$$("list");
 
 		this.on(list, "onAfterSelect", (id) => {
-			const title = this.$$("infoTitle");
-			const main = this.$$("infoMain");
 			this.setParam("id", id, true);
-
-			const contact = contactsDB.getItem(id);
-			const statusID = contact.StatusID;
-
-			statusesDB.waitData.then(() => {
-				const statuses = statusesDB.getItem(statusID);
-				const {Value: status, Icon: icon} = statuses;
-				main.setValues(
-					{...contact, Status: status, StatusIcon: icon},
-					true
-				);
-			});
-
-			title.parse(contact);
 		});
 	}
 }
