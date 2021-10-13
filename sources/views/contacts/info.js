@@ -36,7 +36,11 @@ export default class Info extends JetView {
 			height: 50,
 			icon: "far fa-edit",
 			label: "Edit",
-			css: "customBtn"
+			css: "customBtn",
+			click: () => {
+				const parentView = this.getParentView();
+				parentView.setParam("form", "edit", true);
+			}
 		};
 
 		const InfoHead = {

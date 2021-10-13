@@ -140,14 +140,20 @@ export default class ContactForm extends JetView {
 			width: 150,
 			css: "customBtn",
 			click: () => {
-				this.closeForm("first");
+				if (this._formState === "edit") {
+					this.closeForm();
+				}
+				else {
+					this.closeForm("first");
+				}
 			}
 		};
 
-		const AddBtn = {
+		const ActionBtn = {
 			view: "button",
+			localId: "actionBtn",
 			width: 150,
-			label: "Add",
+			value: "Add",
 			css: "customBtn",
 			click: () => {
 				const form = this.$$("form");
@@ -159,14 +165,25 @@ export default class ContactForm extends JetView {
 					const Birthday = format(birthday);
 					const StartDate = format(startdate);
 					const sendData = {...values, Birthday, StartDate};
-
-					contactsDB
-						.waitSave(() => {
-							contactsDB.add(sendData);
-						})
-						.then(() => {
-							this.closeForm("last");
-						});
+					if (this._formState === "add") {
+						contactsDB
+							.waitSave(() => {
+								contactsDB.add(sendData);
+							})
+							.then(() => {
+								this.closeForm("last");
+							});
+					}
+					else if (this._formState === "edit") {
+						contactsDB
+							.waitSave(() => {
+								contactsDB.updateItem(this._contactID, sendData);
+							})
+							.then(() => {
+								this.closeForm();
+								webix.message("Contact was updated");
+							});
+					}
 				}
 			}
 		};
@@ -200,7 +217,7 @@ export default class ContactForm extends JetView {
 					}
 				]
 			},
-			{margin: 15, cols: [{}, CancelBtn, AddBtn]}
+			{margin: 15, cols: [{}, CancelBtn, ActionBtn]}
 		];
 
 		const formRules = {
@@ -221,7 +238,12 @@ export default class ContactForm extends JetView {
 		return {
 			paddingX: 10,
 			rows: [
-				{view: "label", label: "Add new contact", css: "form-label"},
+				{
+					view: "label",
+					localId: "formLabel",
+					label: "Add new contact",
+					css: "form-label"
+				},
 				{
 					view: "form",
 					localId: "form",
@@ -243,7 +265,25 @@ export default class ContactForm extends JetView {
 		};
 	}
 
-	closeForm(select) {
+	urlChange(view, url) {
+		const {form: formState, id} = url[0].params;
+		this._formState = formState;
+		this._contactID = id;
+
+		if (formState) {
+			const formLabel = formState === "edit" ? "Edit" : "Add";
+			const actionBtnLabel = formState === "edit" ? "Save" : "Add";
+
+			this.$$("formLabel").setValue(`${formLabel} a new contact`);
+			this.$$("actionBtn").setValue(actionBtnLabel);
+
+			if (formState === "edit") {
+				this.getContact(id);
+			}
+		}
+	}
+
+	closeForm(select = "") {
 		const form = this.$$("form");
 		const parentView = this.getParentView();
 		form.clear();
@@ -251,5 +291,14 @@ export default class ContactForm extends JetView {
 		this.$$("StartDate").setValue(new Date());
 		parentView.setParam("form", false, true);
 		parentView.setParam("list", select, true);
+	}
+
+	getContact(id) {
+		const form = this.$$("form");
+
+		contactsDB.waitData.then(() => {
+			const value = contactsDB.getItem(id);
+			form.setValues(value);
+		});
 	}
 }

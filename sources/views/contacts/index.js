@@ -39,7 +39,7 @@ export default class Contacts extends JetView {
 			label: "Add contact",
 			css: "customBtn",
 			click: () => {
-				this.setParam("form", true, true);
+				this.setParam("form", "add", true);
 			}
 		};
 
