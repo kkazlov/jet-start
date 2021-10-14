@@ -1,5 +1,6 @@
 import {JetView} from "webix-jet";
 
+import activitiesDB from "../../models/activitiesDB";
 import contactsDB from "../../models/contactsDB";
 import statusesDB from "../../models/statusesDB";
 
@@ -23,7 +24,15 @@ export default class Info extends JetView {
 						const id = this.getParam("id");
 						const parentView = this.getParentView();
 
+						const activityArr = activitiesDB.data.find(
+							obj => +obj.ContactID === +id
+						);
+						activityArr.forEach((item) => {
+							activitiesDB.remove(item.id);
+						});
+
 						contactsDB.remove(id);
+
 						parentView.setParam("list", "first", true);
 					});
 			}
