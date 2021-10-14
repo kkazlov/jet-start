@@ -91,30 +91,6 @@ export default class Info extends JetView {
 		});
 	}
 
-	ready() {
-		/* const list = this.$$("list");
-
-		this.on(list, "onAfterSelect", (id) => {
-			const title = this.$$("infoTitle");
-			const main = this.$$("infoMain");
-			this.setParam("id", id, true);
-
-			const contact = contactsDB.getItem(id);
-			const statusID = contact.StatusID;
-
-			statusesDB.waitData.then(() => {
-				const statuses = statusesDB.getItem(statusID);
-				const {Value: status, Icon: icon} = statuses;
-				main.setValues(
-					{...contact, Status: status, StatusIcon: icon},
-					true
-				);
-			});
-
-			title.parse(contact);
-		}); */
-	}
-
 	infoTemplate() {
 		const template = ({
 			Photo,
@@ -122,13 +98,12 @@ export default class Info extends JetView {
 			Skype,
 			Job,
 			Company,
-			Birthday,
 			Address,
 			Status = "No status",
-			StatusIcon = ""
+			StatusIcon = "",
+			_birthday
 		}) => {
 			const _photo = Photo || "https://via.placeholder.com/550";
-
 			return `
 			<div class="info">
 				<div class="info__block">
@@ -166,7 +141,7 @@ export default class Info extends JetView {
 	
 					<div class="info__item">
 						<span class="far fa-calendar-alt"></span>
-						<span>Date of birth: ${Birthday}</span>
+						<span>Date of birth: ${_birthday}</span>
 					</div>
 	
 					<div class="info__item">
