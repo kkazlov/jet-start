@@ -88,7 +88,7 @@ export default class ContactForm extends JetView {
 
 		const ChangeBtn = {
 			view: "uploader",
-			value: "Upload file",
+			label: "Change photo",
 			css: "customBtn",
 			accept: "image/jpeg, image/png",
 			autosend: false,
@@ -119,12 +119,16 @@ export default class ContactForm extends JetView {
 			cols: [
 				{
 					id: "photoTemplate",
+					borderless: true,
 					maxHeight: 200,
-					template: obj => `
-						<div class='photo'>
-							<img src=${obj.Photo || "https://via.placeholder.com/550"} alt='Photo'>
+					template: ({Photo}) => {
+						const _photo = Photo || "https://via.placeholder.com/550";
+						return `
+						<div class="info__photo">
+							<img src=${_photo} alt="photo">
 						</div>
-					`
+					`;
+					}
 				},
 				{
 					margin: 7,
@@ -159,12 +163,13 @@ export default class ContactForm extends JetView {
 				const form = this.$$("form");
 				if (form.validate()) {
 					const values = form.getValues();
+					const Photo = webix.$$("photoTemplate").getValues().Photo;
 					const {Birthday: birthday, StartDate: startdate} = values;
 
 					const format = webix.Date.dateToStr("%Y-%m-%d %h:%i");
 					const Birthday = format(birthday);
 					const StartDate = format(startdate);
-					const sendData = {...values, Birthday, StartDate};
+					const sendData = {...values, Birthday, StartDate, Photo};
 					if (this._formState === "add") {
 						contactsDB
 							.waitSave(() => {
@@ -177,7 +182,10 @@ export default class ContactForm extends JetView {
 					else if (this._formState === "edit") {
 						contactsDB
 							.waitSave(() => {
-								contactsDB.updateItem(this._contactID, sendData);
+								contactsDB.updateItem(
+									this._contactID,
+									sendData
+								);
 							})
 							.then(() => {
 								this.closeForm();
@@ -286,6 +294,7 @@ export default class ContactForm extends JetView {
 	closeForm(select = "") {
 		const form = this.$$("form");
 		const parentView = this.getParentView();
+		webix.$$("photoTemplate").setValues({Photo: ""});
 		form.clear();
 		form.clearValidation();
 		this.$$("StartDate").setValue(new Date());
@@ -299,6 +308,7 @@ export default class ContactForm extends JetView {
 		contactsDB.waitData.then(() => {
 			const value = contactsDB.getItem(id);
 			form.setValues(value);
+			webix.$$("photoTemplate").setValues({Photo: value.Photo});
 		});
 	}
 }

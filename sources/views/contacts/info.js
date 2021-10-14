@@ -86,7 +86,6 @@ export default class Info extends JetView {
 		contactsDB.waitData.then(() => {
 			const contact = contactsDB.getItem(id);
 			const statusID = contact.StatusID;
-
 			statusesDB.waitData.then(() => {
 				const statuses = statusesDB.getItem(statusID);
 				const {Value: status, Icon: icon} = statuses;
@@ -95,7 +94,6 @@ export default class Info extends JetView {
 					true
 				);
 			});
-
 			title.parse(contact);
 		});
 	}

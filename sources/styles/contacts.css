@@ -20,13 +20,14 @@
 	max-width: 30px;
 	height: 30px;
 	border-radius: 100%;
+	
 	overflow: hidden;
 	
 }
 
 .contact__photo img {
-	max-width: 100%;
-	
+	width: auto;
+  	height: 100%;
 }
 
 .info {

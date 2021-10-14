@@ -160,12 +160,6 @@ export default class ActivitiesTable extends JetView {
 			}
 		});
 
-		/* this.on(activitiesDB.data, "onStoreUpdated", (id) => {
-			console.log(id)
-			if (id) {
-				table.filterByAll();
-			}
-		}); It doesn't keep an activity type */
 
 		this.on(activitiesDB.data, "onDataUpdate", () => {
 			table.filterByAll();
