@@ -20,7 +20,12 @@ export default class ActivitiesTable extends JetView {
 			id: "ActivityType",
 			header: {
 				content: "selectFilter",
-				compare: (cellValue, filterValue, obj) => +obj.TypeID === +filterValue
+				compare: (cellValue, filterValue, obj) => {
+					if (+obj.ContactID === +this._contactID) {
+						return +obj.TypeID === +filterValue;
+					}
+					return false;
+				}
 			},
 
 			fillspace: 3,
@@ -103,11 +108,27 @@ export default class ActivitiesTable extends JetView {
 		};
 	}
 
+	init() {
+		const table = this.$$("activitiesTable");
+		this.on(table, "onBeforeFilter", (id, value) => {
+			if (id === "ActivityType") {
+				if (!value) {
+					const contactID = this.getParam("id");
+					table.data.sync(activitiesDB, function filter() {
+						this.filter("#ContactID#", contactID);
+					});
+				}
+			}
+		});
+	}
+
 	urlChange() {
 		const contactID = this.getParam("id");
+		this._contactID = contactID;
 		const table = this.$$("activitiesTable");
 		table.data.sync(activitiesDB, function filter() {
 			this.filter("#ContactID#", contactID);
 		});
+		table.filterByAll();
 	}
 }
