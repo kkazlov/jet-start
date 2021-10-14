@@ -3,6 +3,7 @@ import {JetView} from "webix-jet";
 import contactsDB from "../../models/contactsDB";
 import ActivitiesTable from "./activities-table";
 import ContactForm from "./contact-form";
+import FilesTable from "./files-table";
 import Info from "./info";
 import List from "./list";
 
@@ -26,7 +27,7 @@ export default class Contacts extends JetView {
 			borderless: true,
 			cells: [
 				{$subview: ActivitiesTable, id: "Activities"},
-				{id: "Files", template: "<i>Info about the Form</i>"}
+				{$subview: FilesTable, id: "Files"}
 			]
 		};
 

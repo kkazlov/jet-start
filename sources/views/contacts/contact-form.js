@@ -110,8 +110,18 @@ export default class ContactForm extends JetView {
 
 		const DeleteBtn = {
 			view: "button",
+			localId: "deleteBtn",
 			label: "Delete photo",
-			css: "customBtn"
+			css: "customBtn",
+			click: () => {
+				const photo = contactsDB.getItem(this._contactID).Photo;
+				if (photo) {
+					webix.$$("photoTemplate").setValues({Photo: ""});
+					contactsDB.updateItem(this._contactID, {Photo: ""});
+				}
+				else webix.message("No photo");
+				this.$$("deleteBtn").blur();
+			}
 		};
 
 		const PhotoBlock = {
@@ -122,7 +132,8 @@ export default class ContactForm extends JetView {
 					borderless: true,
 					maxHeight: 200,
 					template: ({Photo}) => {
-						const _photo = Photo || "https://via.placeholder.com/550";
+						const _photo =
+							Photo || "https://via.placeholder.com/550";
 						return `
 						<div class="info__photo">
 							<img src=${_photo} alt="photo">
@@ -281,7 +292,6 @@ export default class ContactForm extends JetView {
 		if (formState) {
 			const formLabel = formState === "edit" ? "Edit" : "Add";
 			const actionBtnLabel = formState === "edit" ? "Save" : "Add";
-
 			this.$$("formLabel").setValue(`${formLabel} a new contact`);
 			this.$$("actionBtn").setValue(actionBtnLabel);
 
