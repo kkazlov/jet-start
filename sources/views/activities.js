@@ -18,7 +18,7 @@ export default class Activities extends JetView {
 			label: "Add activity",
 			css: "customBtn",
 			click: () => {
-				this._popup.showWindow();
+				this._popup.showWindow({mode: "add", table: "activities"});
 			}
 		};
 
@@ -132,7 +132,7 @@ export default class Activities extends JetView {
 						});
 				},
 				editIcon: (e, id) => {
-					this._popup.showWindow(id);
+					this._popup.showWindow({id, mode: "edit", table: "activities"});
 				}
 			}
 		};

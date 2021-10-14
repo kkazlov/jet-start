@@ -2,6 +2,7 @@ import {JetView} from "webix-jet";
 
 import activitiesDB from "../../models/activitiesDB";
 import activityTypesDB from "../../models/activityTypesDB";
+import Popup from "../popup";
 
 export default class ActivitiesTable extends JetView {
 	config() {
@@ -101,32 +102,52 @@ export default class ActivitiesTable extends JetView {
 				editCol,
 				deleteCol
 			],
-			css: "webix_data_border webix_header_border activity-table"
+			css: "webix_data_border webix_header_border activity-table",
+			onClick: {
+				deleteIcon(e, id) {
+					webix
+						.confirm({
+							title: "Delete",
+							text: "Do you want to delete this record? Deleting cannot be undone."
+						})
+						.then(() => {
+							activitiesDB.remove(id);
+						});
+				},
+				editIcon: (e, id) => {
+					this._popup.showWindow({
+						id,
+						mode: "edit",
+						table: "contacts"
+					});
+				}
+			}
+		};
+
+		const AddActivityBtn = {
+			view: "button",
+			type: "icon",
+			icon: "fas fa-plus-square",
+			width: 180,
+			height: 40,
+			label: "Add activity",
+			css: "customBtn",
+			click: () => {
+				this._popup.showWindow({
+					id: this._contactID,
+					mode: "add",
+					table: "contacts"
+				});
+			}
 		};
 
 		return {
-			rows: [
-				datatable,
-				{
-					paddingY: 2,
-					cols: [
-						{},
-						{
-							view: "button",
-							type: "icon",
-							icon: "fas fa-plus-square",
-							width: 180,
-							height: 40,
-							label: "Add activity",
-							css: "customBtn"
-						}
-					]
-				}
-			]
+			rows: [datatable, {paddingY: 2, cols: [{}, AddActivityBtn]}]
 		};
 	}
 
 	init() {
+		this._popup = this.ui(Popup);
 		const table = this.$$("activitiesTable");
 		this.on(table, "onBeforeFilter", (id, value) => {
 			if (id === "ActivityType") {
@@ -137,6 +158,23 @@ export default class ActivitiesTable extends JetView {
 					});
 				}
 			}
+		});
+
+		/* this.on(activitiesDB.data, "onStoreUpdated", (id) => {
+			console.log(id)
+			if (id) {
+				table.filterByAll();
+			}
+		}); It doesn't keep an activity type */
+
+		this.on(activitiesDB.data, "onDataUpdate", () => {
+			table.filterByAll();
+		});
+		this.on(activitiesDB.data, "onAfterDelete", () => {
+			table.filterByAll();
+		});
+		this.on(activitiesDB.data, "onAfterAdd", () => {
+			table.filterByAll();
 		});
 	}
 
