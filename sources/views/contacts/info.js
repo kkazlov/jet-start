@@ -2,10 +2,20 @@ import {JetView} from "webix-jet";
 
 import activitiesDB from "../../models/activitiesDB";
 import contactsDB from "../../models/contactsDB";
+import filesDB from "../../models/filesDB";
 import statusesDB from "../../models/statusesDB";
 
 export default class Info extends JetView {
 	config() {
+		const deleteRecords = (dataBase, id) => {
+			const recordsArr = dataBase.data.find(
+				obj => +obj.ContactID === +id
+			);
+			recordsArr.forEach((item) => {
+				dataBase.remove(item.id);
+			});
+		};
+
 		const BtnDelete = {
 			view: "button",
 			type: "icon",
@@ -24,12 +34,8 @@ export default class Info extends JetView {
 						const id = this.getParam("id");
 						const parentView = this.getParentView();
 
-						const activityArr = activitiesDB.data.find(
-							obj => +obj.ContactID === +id
-						);
-						activityArr.forEach((item) => {
-							activitiesDB.remove(item.id);
-						});
+						deleteRecords(activitiesDB, id);
+						deleteRecords(filesDB, id);
 
 						contactsDB.remove(id);
 

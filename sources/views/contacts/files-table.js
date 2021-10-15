@@ -66,15 +66,26 @@ export default class FilesTable extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () =>
-				"<span class='far fa-trash-alt deleteIcon table-icon'></span>"
+			template: () => "<span class='far fa-trash-alt deleteIcon table-icon'></span>"
 		};
 
 		const table = {
 			view: "datatable",
 			localId: "table",
 			columns: [nameCol, changeDateCol, sizeCol, deleteCol],
-			css: "webix_data_border webix_header_border activity-table"
+			css: "webix_data_border webix_header_border activity-table",
+			onClick: {
+				deleteIcon(e, id) {
+					webix
+						.confirm({
+							title: "Delete",
+							text: "Do you want to delete this record? Deleting cannot be undone."
+						})
+						.then(() => {
+							filesDB.remove(id);
+						});
+				}
+			}
 		};
 
 		const uploadBtn = {
@@ -100,6 +111,9 @@ export default class FilesTable extends JetView {
 						ChangeDate: webix.Date.dateToStr("%Y-%m-%d")(ChangeDate)
 					};
 					filesDB.add(sendData);
+				},
+				onFileUploadError: (file, res) => {
+					webix.message(`Cannot upload a file. Status: ${res}`);
 				}
 			}
 		};

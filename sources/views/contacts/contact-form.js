@@ -103,6 +103,7 @@ export default class ContactForm extends JetView {
 							.parse({Photo: event.target.result});
 					};
 					reader.readAsDataURL(file);
+					this.$scope.$$("deleteBtn").enable();
 					return false;
 				}
 			}
@@ -114,12 +115,13 @@ export default class ContactForm extends JetView {
 			label: "Delete photo",
 			css: "customBtn",
 			click: () => {
-				const photo = contactsDB.getItem(this._contactID).Photo;
+				const template = webix.$$("photoTemplate");
+				const photo = template.data.Photo;
 				if (photo) {
-					webix.$$("photoTemplate").setValues({Photo: ""});
+					template.setValues({Photo: ""});
 					contactsDB.updateItem(this._contactID, {Photo: ""});
+					this.$$("deleteBtn").disable();
 				}
-				else webix.message("No photo");
 				this.$$("deleteBtn").blur();
 			}
 		};
@@ -288,6 +290,7 @@ export default class ContactForm extends JetView {
 		const {form: formState, id} = url[0].params;
 		this._formState = formState;
 		this._contactID = id;
+		const deleteBtn = this.$$("deleteBtn");
 
 		if (formState) {
 			const formLabel = formState === "edit" ? "Edit" : "Add";
@@ -296,7 +299,18 @@ export default class ContactForm extends JetView {
 			this.$$("actionBtn").setValue(actionBtnLabel);
 
 			if (formState === "edit") {
+				const photo = contactsDB.getItem(id).Photo;
+				if (!photo) {
+					deleteBtn.disable();
+				}
+				else {
+					deleteBtn.enable();
+				}
+
 				this.getContact(id);
+			}
+			else {
+				deleteBtn.disable();
 			}
 		}
 	}
@@ -304,12 +318,13 @@ export default class ContactForm extends JetView {
 	closeForm(select = "") {
 		const form = this.$$("form");
 		const parentView = this.getParentView();
-		webix.$$("photoTemplate").setValues({Photo: ""});
+
+		parentView.setParam("form", false, true);
+		parentView.setParam("list", select, true);
 		form.clear();
 		form.clearValidation();
 		this.$$("StartDate").setValue(new Date());
-		parentView.setParam("form", false, true);
-		parentView.setParam("list", select, true);
+		webix.$$("photoTemplate").setValues({Photo: ""});
 	}
 
 	getContact(id) {

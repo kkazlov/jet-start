@@ -51,6 +51,7 @@ export default class Contacts extends JetView {
 				{
 					gravity: 3,
 					paddingX: 15,
+					animate: false,
 					cells: [
 						{
 							localId: "contactLayout",
