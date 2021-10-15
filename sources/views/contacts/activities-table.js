@@ -161,7 +161,9 @@ export default class ActivitiesTable extends JetView {
 			}
 		});
 
-
+		this.on(table, "onCheck", () => {
+			table.filterByAll();
+		});
 		this.on(activitiesDB.data, "onDataUpdate", () => {
 			table.filterByAll();
 		});
