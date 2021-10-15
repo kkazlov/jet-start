@@ -91,6 +91,7 @@ export default class ActivitiesTable extends JetView {
 			template: () => "<span class='far fa-trash-alt deleteIcon table-icon'></span>"
 		};
 
+
 		const datatable = {
 			view: "datatable",
 			localId: "activitiesTable",

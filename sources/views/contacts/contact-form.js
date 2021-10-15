@@ -5,6 +5,91 @@ import statusesDB from "../../models/statusesDB";
 
 export default class ContactForm extends JetView {
 	config() {
+		const label = {
+			view: "label",
+			localId: "formLabel",
+			label: "Add new contact",
+			css: "form-label"
+		};
+
+		const form = {
+			view: "form",
+			localId: "form",
+			borderless: true,
+			margin: 15,
+			rows: this.formElements(),
+			rules: this.formRules(),
+			elementsConfig: {
+				invalidMessage: "Enter the correct value!"
+			},
+			on: {
+				onChange: function change() {
+					this.clearValidation();
+				}
+			}
+		};
+		return {
+			paddingX: 10,
+			rows: [
+				label,
+				form,
+				{}
+			]
+		};
+	}
+
+	urlChange(view, url) {
+		const {form: formState, id} = url[0].params;
+		this._formState = formState;
+		this._contactID = id;
+		const deleteBtn = this.$$("deleteBtn");
+
+		if (formState) {
+			const formLabel = formState === "edit" ? "Edit" : "Add";
+			const actionBtnLabel = formState === "edit" ? "Save" : "Add";
+			this.$$("formLabel").setValue(`${formLabel} a new contact`);
+			this.$$("actionBtn").setValue(actionBtnLabel);
+
+			if (formState === "edit") {
+				const photo = contactsDB.getItem(id).Photo;
+				if (!photo) {
+					deleteBtn.disable();
+				}
+				else {
+					deleteBtn.enable();
+				}
+
+				this.getContact(id);
+			}
+			else {
+				deleteBtn.disable();
+			}
+		}
+	}
+
+	closeForm(select = "") {
+		const form = this.$$("form");
+		const parentView = this.getParentView();
+
+		parentView.setParam("form", false, true);
+		parentView.setParam("list", select, true);
+		form.clear();
+		form.clearValidation();
+		this.$$("StartDate").setValue(new Date());
+		webix.$$("photoTemplate").setValues({Photo: ""});
+	}
+
+	getContact(id) {
+		const form = this.$$("form");
+
+		contactsDB.waitData.then(() => {
+			const value = contactsDB.getItem(id);
+			form.setValues(value);
+			webix.$$("photoTemplate").setValues({Photo: value.Photo});
+		});
+	}
+
+	formElements() {
 		const FirsNameElem = {
 			view: "text",
 			label: "First name",
@@ -240,8 +325,11 @@ export default class ContactForm extends JetView {
 			},
 			{margin: 15, cols: [{}, CancelBtn, ActionBtn]}
 		];
+		return FormElements;
+	}
 
-		const formRules = {
+	formRules() {
+		return {
 			FirstName: webix.rules.isNotEmpty,
 			LastName: webix.rules.isNotEmpty,
 			StatusID: webix.rules.isNotEmpty,
@@ -255,85 +343,5 @@ export default class ContactForm extends JetView {
 			Birthday: webix.rules.isNotEmpty,
 			Phone: webix.rules.isNotEmpty && webix.rules.isNumber
 		};
-
-		return {
-			paddingX: 10,
-			rows: [
-				{
-					view: "label",
-					localId: "formLabel",
-					label: "Add new contact",
-					css: "form-label"
-				},
-				{
-					view: "form",
-					localId: "form",
-					borderless: true,
-					margin: 15,
-					rows: FormElements,
-					rules: formRules,
-					elementsConfig: {
-						invalidMessage: "Enter the correct value!"
-					},
-					on: {
-						onChange: function change() {
-							this.clearValidation();
-						}
-					}
-				},
-				{}
-			]
-		};
-	}
-
-	urlChange(view, url) {
-		const {form: formState, id} = url[0].params;
-		this._formState = formState;
-		this._contactID = id;
-		const deleteBtn = this.$$("deleteBtn");
-
-		if (formState) {
-			const formLabel = formState === "edit" ? "Edit" : "Add";
-			const actionBtnLabel = formState === "edit" ? "Save" : "Add";
-			this.$$("formLabel").setValue(`${formLabel} a new contact`);
-			this.$$("actionBtn").setValue(actionBtnLabel);
-
-			if (formState === "edit") {
-				const photo = contactsDB.getItem(id).Photo;
-				if (!photo) {
-					deleteBtn.disable();
-				}
-				else {
-					deleteBtn.enable();
-				}
-
-				this.getContact(id);
-			}
-			else {
-				deleteBtn.disable();
-			}
-		}
-	}
-
-	closeForm(select = "") {
-		const form = this.$$("form");
-		const parentView = this.getParentView();
-
-		parentView.setParam("form", false, true);
-		parentView.setParam("list", select, true);
-		form.clear();
-		form.clearValidation();
-		this.$$("StartDate").setValue(new Date());
-		webix.$$("photoTemplate").setValues({Photo: ""});
-	}
-
-	getContact(id) {
-		const form = this.$$("form");
-
-		contactsDB.waitData.then(() => {
-			const value = contactsDB.getItem(id);
-			form.setValues(value);
-			webix.$$("photoTemplate").setValues({Photo: value.Photo});
-		});
 	}
 }
