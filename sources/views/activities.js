@@ -85,8 +85,12 @@ export default class Activities extends JetView {
 			fillspace: 3,
 			collection: contactsDB,
 			template({ContactID}) {
-				const contact = this.collection.getItem(ContactID);
-				return `${contact.value || ""}`;
+				const contact = this.collection.getItem(ContactID) || {
+					FirstName: "",
+					LastName: ""
+				};
+				const {FirstName, LastName} = contact;
+				return `${FirstName} ${LastName}`;
 			}
 		};
 
