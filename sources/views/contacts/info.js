@@ -89,7 +89,7 @@ export default class Info extends JetView {
 	urlChange() {
 		const title = this.$$("infoTitle");
 		const main = this.$$("infoMain");
-		const id = this.getParam("id");
+		const id = this.getParam("id", true);
 		contactsDB.waitData.then(() => {
 			const contact = contactsDB.getItem(id);
 			const statusID = contact.StatusID;

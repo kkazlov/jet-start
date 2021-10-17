@@ -132,7 +132,7 @@ export default class ActivitiesTable extends JetView {
 		this.on(table, "onBeforeFilter", (id, value) => {
 			if (id === "ActivityType") {
 				if (!value) {
-					const contactID = this.getParam("id");
+					const contactID = this.getParam("id", true);
 					table.data.sync(activitiesDB, function filter() {
 						this.filter("#ContactID#", contactID);
 					});
@@ -155,7 +155,7 @@ export default class ActivitiesTable extends JetView {
 	}
 
 	urlChange() {
-		const contactID = this.getParam("id");
+		const contactID = this.getParam("id", true);
 		this._contactID = contactID;
 		const table = this.$$("activitiesTable");
 		table.filterByAll();

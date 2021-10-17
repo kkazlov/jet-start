@@ -36,8 +36,7 @@ export default class ContactForm extends JetView {
 	}
 
 	urlChange(view, url) {
-		const {form: formState, id} = url[0].params;
-		this._formState = formState;
+		console.log(this.getParam("id", true));
 		this._contactID = id;
 		const deleteBtn = this.$$("deleteBtn");
 
