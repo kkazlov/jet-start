@@ -35,40 +35,42 @@ export default class ContactForm extends JetView {
 		};
 	}
 
-	urlChange(view, url) {
-		console.log(this.getParam("id", true));
+	init() {
+		this.getParentView().setParam("list", "unselect", true);
+	}
+
+	urlChange() {
+		const id = this.getParam("id", true);
 		this._contactID = id;
 		const deleteBtn = this.$$("deleteBtn");
 
-		if (formState) {
-			const formLabel = formState === "edit" ? "Edit" : "Add";
-			const actionBtnLabel = formState === "edit" ? "Save" : "Add";
-			this.$$("formLabel").setValue(`${formLabel} a new contact`);
-			this.$$("actionBtn").setValue(actionBtnLabel);
+		const formLabel = id ? "Edit" : "Add";
+		const actionBtnLabel = id ? "Save" : "Add";
+		this.$$("formLabel").setValue(`${formLabel} a new contact`);
+		this.$$("actionBtn").setValue(actionBtnLabel);
 
-			if (formState === "edit") {
-				const photo = contactsDB.getItem(id).Photo;
-				if (!photo) {
-					deleteBtn.disable();
-				}
-				else {
-					deleteBtn.enable();
-				}
-
-				this.getContact(id);
-			}
-			else {
+		if (id) {
+			const photo = contactsDB.getItem(id).Photo;
+			if (!photo) {
 				deleteBtn.disable();
 			}
+			else {
+				deleteBtn.enable();
+			}
+
+			this.getContact(id);
+		}
+		else {
+			deleteBtn.disable();
 		}
 	}
 
-	closeForm(select = "") {
+	closeForm(select = "current") {
 		const form = this.$$("form");
 		const parentView = this.getParentView();
-
-		parentView.setParam("form", false, true);
 		parentView.setParam("list", select, true);
+		this.show("contacts.contact-details");
+
 		form.clear();
 		form.clearValidation();
 		this.$$("StartDate").setValue(new Date());
@@ -245,7 +247,7 @@ export default class ContactForm extends JetView {
 			width: 150,
 			css: "customBtn",
 			click: () => {
-				if (this._formState === "edit") {
+				if (this._contactID) {
 					this.closeForm();
 				}
 				else {
@@ -271,7 +273,7 @@ export default class ContactForm extends JetView {
 					const Birthday = format(birthday);
 					const StartDate = format(startdate);
 					const sendData = {...values, Birthday, StartDate, Photo};
-					if (this._formState === "add") {
+					if (!this._contactID) {
 						contactsDB
 							.waitSave(() => {
 								contactsDB.add(sendData);
@@ -280,7 +282,7 @@ export default class ContactForm extends JetView {
 								this.closeForm("last");
 							});
 					}
-					else if (this._formState === "edit") {
+					else {
 						contactsDB
 							.waitSave(() => {
 								contactsDB.updateItem(

@@ -39,7 +39,6 @@ export default class ListView extends JetView {
 			}
 		};
 
-
 		return {
 			rows: [List, AddContactBtn]
 		};
@@ -62,21 +61,32 @@ export default class ListView extends JetView {
 		const listParam = url[0].params.list;
 		const idParam = url[0].params.id;
 
-		if (!idParam) {
+		if (listParam === "unselect") {
 			list.disable();
+			list.unselect();
 			addBtn.disable();
 		}
 		else {
 			list.enable();
 			addBtn.enable();
-		}
-
-		if (listParam) {
-			const id = listParam === "first"
-				? list.getFirstId()
-				: list.getLastId();
-			list.select(id);
-			this.setParam("list", false, true);
+			if (listParam && listParam !== "unselect") {
+				let id;
+				switch (listParam) {
+					case "first":
+						id = list.getFirstId();
+						break;
+					case "current":
+						id = idParam;
+						break;
+					case "last":
+						id = list.getLastId();
+						break;
+					default: break;
+				}
+				this.setParam("id", id, true);
+				list.select(id);
+				this.setParam("list", false, true);
+			}
 		}
 	}
 

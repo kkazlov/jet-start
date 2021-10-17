@@ -31,8 +31,8 @@ export default class Info extends JetView {
 						text: "Do you want to delete this contact? Deleting cannot be undone."
 					})
 					.then(() => {
-						const id = this.getParam("id");
-						const parentView = this.getParentView();
+						const id = this.getParam("id", true);
+						const parentView = this.getParentView().getParentView();
 
 						deleteRecords(activitiesDB, id);
 						deleteRecords(filesDB, id);
@@ -53,8 +53,7 @@ export default class Info extends JetView {
 			label: "Edit",
 			css: "customBtn",
 			click: () => {
-				const parentView = this.getParentView();
-				parentView.setParam("form", "edit", true);
+				this.show("contacts.contact-form");
 			}
 		};
 
@@ -89,8 +88,8 @@ export default class Info extends JetView {
 	urlChange() {
 		const title = this.$$("infoTitle");
 		const main = this.$$("infoMain");
-		const id = this.getParam("id", true);
 		contactsDB.waitData.then(() => {
+			const id = this.getParam("id", true);
 			const contact = contactsDB.getItem(id);
 			const statusID = contact.StatusID;
 			statusesDB.waitData.then(() => {
