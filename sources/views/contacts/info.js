@@ -67,6 +67,7 @@ export default class Info extends JetView {
 					localId: "infoTitle",
 					borderless: true,
 					autoheight: true,
+					width: 600,
 					template: ({FirstName, LastName}) => `${FirstName} ${LastName}`,
 					css: "info__label"
 				},

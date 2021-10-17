@@ -20,21 +20,18 @@ export default class ContactForm extends JetView {
 			rows: this.formElements(),
 			rules: this.formRules(),
 			elementsConfig: {
-				invalidMessage: "Enter the correct value!"
+				invalidMessage: "Enter the correct value!",
+				labelWidth: 90
 			},
 			on: {
-				onChange: function change() {
+				onChange() {
 					this.clearValidation();
 				}
 			}
 		};
 		return {
 			paddingX: 10,
-			rows: [
-				label,
-				form,
-				{}
-			]
+			rows: [label, form, {}]
 		};
 	}
 
@@ -76,7 +73,7 @@ export default class ContactForm extends JetView {
 		form.clear();
 		form.clearValidation();
 		this.$$("StartDate").setValue(new Date());
-		webix.$$("photoTemplate").setValues({Photo: ""});
+		this.$$("photoTemplate").setValues({Photo: ""});
 	}
 
 	getContact(id) {
@@ -85,7 +82,7 @@ export default class ContactForm extends JetView {
 		contactsDB.waitData.then(() => {
 			const value = contactsDB.getItem(id);
 			form.setValues(value);
-			webix.$$("photoTemplate").setValues({Photo: value.Photo});
+			this.$$("photoTemplate").setValues({Photo: value.Photo});
 		});
 	}
 
@@ -93,13 +90,15 @@ export default class ContactForm extends JetView {
 		const FirsNameElem = {
 			view: "text",
 			label: "First name",
-			name: "FirstName"
+			name: "FirstName",
+			required: true
 		};
 
 		const LastNameElem = {
 			view: "text",
 			label: "Last name",
-			name: "LastName"
+			name: "LastName",
+			required: true
 		};
 
 		const StartDataElem = {
@@ -107,7 +106,8 @@ export default class ContactForm extends JetView {
 			localId: "StartDate",
 			value: new Date(),
 			label: "Joining",
-			name: "StartDate"
+			name: "StartDate",
+			required: true
 		};
 
 		const StatusElem = {
@@ -119,7 +119,8 @@ export default class ContactForm extends JetView {
 					template: "#Value#"
 				}
 			},
-			name: "StatusID"
+			name: "StatusID",
+			required: true
 		};
 
 		const JobElem = {
@@ -131,7 +132,8 @@ export default class ContactForm extends JetView {
 		const CompanyElem = {
 			view: "text",
 			label: "Company",
-			name: "Company"
+			name: "Company",
+			required: true
 		};
 
 		const WebsiteElem = {
@@ -150,7 +152,8 @@ export default class ContactForm extends JetView {
 		const EmailElem = {
 			view: "text",
 			label: "Email",
-			name: "Email"
+			name: "Email",
+			required: true
 		};
 
 		const SkypeElem = {
@@ -162,13 +165,15 @@ export default class ContactForm extends JetView {
 		const PhoneElem = {
 			view: "text",
 			label: "Phone",
-			name: "Phone"
+			name: "Phone",
+			required: true
 		};
 
 		const BirthdayElem = {
 			view: "datepicker",
 			label: "Birthday",
-			name: "Birthday"
+			name: "Birthday",
+			required: true
 		};
 
 		const ChangeBtn = {
@@ -183,7 +188,7 @@ export default class ContactForm extends JetView {
 					let file = upload.file;
 					let reader = new FileReader();
 					reader.onload = (event) => {
-						webix
+						this.$scope
 							.$$("photoTemplate")
 							.parse({Photo: event.target.result});
 					};
@@ -200,11 +205,10 @@ export default class ContactForm extends JetView {
 			label: "Delete photo",
 			css: "customBtn",
 			click: () => {
-				const template = webix.$$("photoTemplate");
+				const template = this.$$("photoTemplate");
 				const photo = template.data.Photo;
 				if (photo) {
 					template.setValues({Photo: ""});
-					contactsDB.updateItem(this._contactID, {Photo: ""});
 					this.$$("deleteBtn").disable();
 				}
 				this.$$("deleteBtn").blur();
@@ -215,7 +219,7 @@ export default class ContactForm extends JetView {
 			margin: 15,
 			cols: [
 				{
-					id: "photoTemplate",
+					localId: "photoTemplate",
 					borderless: true,
 					maxHeight: 200,
 					template: ({Photo}) => {
@@ -261,7 +265,7 @@ export default class ContactForm extends JetView {
 				const form = this.$$("form");
 				if (form.validate()) {
 					const values = form.getValues();
-					const Photo = webix.$$("photoTemplate").getValues().Photo;
+					const Photo = this.$$("photoTemplate").getValues().Photo;
 					const {Birthday: birthday, StartDate: startdate} = values;
 
 					const format = webix.Date.dateToStr("%Y-%m-%d %h:%i");
@@ -330,18 +334,14 @@ export default class ContactForm extends JetView {
 
 	formRules() {
 		return {
-			FirstName: webix.rules.isNotEmpty,
-			LastName: webix.rules.isNotEmpty,
-			StatusID: webix.rules.isNotEmpty,
-			StartDate: webix.rules.isNotEmpty,
-			Job: webix.rules.isNotEmpty,
-			Company: webix.rules.isNotEmpty,
-			Website: webix.rules.isNotEmpty,
-			Address: webix.rules.isNotEmpty,
-			Email: webix.rules.isNotEmpty && webix.rules.isEmail,
-			Skype: webix.rules.isNotEmpty,
-			Birthday: webix.rules.isNotEmpty,
-			Phone: webix.rules.isNotEmpty && webix.rules.isNumber
+			FirstName: value => value.length <= 15,
+			LastName: value => value.length <= 15,
+			Job: value => value.length <= 20,
+			Company: value => value.length <= 20,
+			Address: value => value.length <= 50,
+			Email: value => value.length <= 20 && webix.rules.isEmail(value),
+			Skype: value => value.length <= 20,
+			Phone: value => value.length <= 20 && webix.rules.isNumber(value)
 		};
 	}
 }

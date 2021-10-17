@@ -63,8 +63,8 @@ export default class ActivitiesTable extends JetView {
 			header: {
 				content: "textFilter",
 				compare: (cellValue, filterValue, obj) => {
-					let _cellValue = cellValue.toLowerCase();
-					let _filterValue = filterValue.toLowerCase();
+					const _cellValue = cellValue.toLowerCase();
+					const _filterValue = filterValue.toLowerCase();
 					if (+obj.ContactID === +this._contactID) {
 						return _cellValue.indexOf(_filterValue) !== -1;
 					}
@@ -105,23 +105,8 @@ export default class ActivitiesTable extends JetView {
 			],
 			css: "webix_data_border webix_header_border activity-table",
 			onClick: {
-				deleteIcon(e, id) {
-					webix
-						.confirm({
-							title: "Delete",
-							text: "Do you want to delete this record? Deleting cannot be undone."
-						})
-						.then(() => {
-							activitiesDB.remove(id);
-						});
-				},
-				editIcon: (e, id) => {
-					this._popup.showWindow({
-						id,
-						mode: "edit",
-						table: "contacts"
-					});
-				}
+				deleteIcon: (e, id) => this.deleteIcon(e, id),
+				editIcon: (e, id) => this.editIcon(e, id)
 			}
 		};
 
@@ -133,13 +118,7 @@ export default class ActivitiesTable extends JetView {
 			height: 40,
 			label: "Add activity",
 			css: "customBtn",
-			click: () => {
-				this._popup.showWindow({
-					id: this._contactID,
-					mode: "add",
-					table: "contacts"
-				});
-			}
+			click: () => this.addActivity()
 		};
 
 		return {
@@ -179,9 +158,33 @@ export default class ActivitiesTable extends JetView {
 		const contactID = this.getParam("id");
 		this._contactID = contactID;
 		const table = this.$$("activitiesTable");
-		table.data.sync(activitiesDB, function filter() {
-			this.filter("#ContactID#", contactID);
-		});
 		table.filterByAll();
+	}
+
+	deleteIcon(e, id) {
+		webix
+			.confirm({
+				title: "Delete",
+				text: "Do you want to delete this record? Deleting cannot be undone."
+			})
+			.then(() => {
+				activitiesDB.remove(id);
+			});
+	}
+
+	editIcon(e, id) {
+		this._popup.showWindow({
+			id,
+			mode: "edit",
+			table: "contacts"
+		});
+	}
+
+	addActivity() {
+		this._popup.showWindow({
+			id: this._contactID,
+			mode: "add",
+			table: "contacts"
+		});
 	}
 }
