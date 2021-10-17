@@ -80,7 +80,8 @@ export default class ActivitiesTable extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () => "<span class='far fa-edit editIcon table-icon'></span>"
+			template: () =>
+				"<span class='far fa-edit editIcon table-icon'></span>"
 		};
 
 		const deleteCol = {
@@ -88,9 +89,9 @@ export default class ActivitiesTable extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () => "<span class='far fa-trash-alt deleteIcon table-icon'></span>"
+			template: () =>
+				"<span class='far fa-trash-alt deleteIcon table-icon'></span>"
 		};
-
 
 		const datatable = {
 			view: "datatable",
@@ -107,6 +108,15 @@ export default class ActivitiesTable extends JetView {
 			onClick: {
 				deleteIcon: (e, id) => this.deleteIcon(e, id),
 				editIcon: (e, id) => this.editIcon(e, id)
+			},
+			on: {
+				onBeforeFilter(id, value) {
+					if (id === "ActivityType") {
+						if (!value) {
+							this.filter((obj) => obj.ContactID === this.$scope._contactID);
+						}
+					}
+				}
 			}
 		};
 
@@ -129,7 +139,15 @@ export default class ActivitiesTable extends JetView {
 	init() {
 		this._popup = this.ui(Popup);
 		const table = this.$$("activitiesTable");
-		this.on(table, "onBeforeFilter", (id, value) => {
+		/* const contactID = this.getParam("id", true);
+		table.data.sync(activitiesDB, function filter() {
+			this.filter("#ContactID#", contactID);
+		});
+
+		this.on(activitiesDB.data, "onStoreUpdated", (id) => {
+			if (id) table.filter("#ContactID#", contactID);
+		}); */
+		/* this.on(table, "onBeforeFilter", (id, value) => {
 			if (id === "ActivityType") {
 				if (!value) {
 					const contactID = this.getParam("id", true);
@@ -138,9 +156,9 @@ export default class ActivitiesTable extends JetView {
 					});
 				}
 			}
-		});
+		}); */
 
-		this.on(table, "onCheck", () => {
+		/* this.on(table, "onCheck", () => {
 			table.filterByAll();
 		});
 		this.on(activitiesDB.data, "onDataUpdate", () => {
@@ -151,13 +169,17 @@ export default class ActivitiesTable extends JetView {
 		});
 		this.on(activitiesDB.data, "onAfterAdd", () => {
 			table.filterByAll();
-		});
+		}); */
 	}
 
 	urlChange() {
-		const contactID = this.getParam("id", true);
-		this._contactID = contactID;
 		const table = this.$$("activitiesTable");
+		const contactID = +this.getParam("id", true);
+		this._contactID = contactID;
+
+		table.data.sync(activitiesDB, function filter() {
+			this.filter(obj => obj.ContactID === contactID);
+		});
 		table.filterByAll();
 	}
 
