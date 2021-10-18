@@ -4,6 +4,7 @@ import activitiesDB from "../../models/activitiesDB";
 import contactsDB from "../../models/contactsDB";
 import filesDB from "../../models/filesDB";
 import statusesDB from "../../models/statusesDB";
+import "../../styles/info.css";
 
 export default class Info extends JetView {
 	config() {
@@ -93,7 +94,7 @@ export default class Info extends JetView {
 			const contact = contactsDB.getItem(id);
 			const statusID = contact.StatusID;
 			statusesDB.waitData.then(() => {
-				const statuses = statusesDB.getItem(statusID);
+				const statuses = statusesDB.getItem(statusID) || {Value: "", Icon: ""};
 				const {Value: status, Icon: icon} = statuses;
 				main.setValues(
 					{...contact, Status: status, StatusIcon: icon},
@@ -112,10 +113,11 @@ export default class Info extends JetView {
 			Job,
 			Company,
 			Address,
-			Status = "No status",
+			Status,
 			StatusIcon = "",
 			_birthday
 		}) => {
+			const _status = Status || "No status";
 			const _photo = Photo || "https://via.placeholder.com/550";
 			return `
 			<div class="info">
@@ -125,7 +127,7 @@ export default class Info extends JetView {
 					</div>
 	
 					<div class="info__status">
-						<span class="status-name">${Status}</span>
+						<span class="status-name">${_status}</span>
 						<span class='fas fa-${StatusIcon}'></span>
 					</div>
 				</div>

@@ -3,6 +3,7 @@ import {JetView} from "webix-jet";
 import ActivitiesTable from "./activities-table";
 import FilesTable from "./files-table";
 import Info from "./info";
+import "../../styles/contact-details.css";
 
 
 export default class ContactDetails extends JetView {

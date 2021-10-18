@@ -4,6 +4,7 @@ import activitiesDB from "../../models/activitiesDB";
 import activityTypesDB from "../../models/activityTypesDB";
 import Popup from "../popup";
 
+
 export default class ActivitiesTable extends JetView {
 	config() {
 		const checkCol = {
