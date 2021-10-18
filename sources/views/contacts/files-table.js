@@ -18,47 +18,12 @@ export default class FilesTable extends JetView {
 			fillspace: 3
 		};
 
-		const convertedSize = (size) => {
-			const numValue = parseFloat(size);
-			const unit = size.replace(/[\d.|\s]/g, "");
-			let convertedValue;
-			switch (unit) {
-				case "b":
-					convertedValue = numValue * 1;
-					break;
-				case "Kb":
-					convertedValue = numValue * 1024;
-					break;
-				case "Mb":
-					convertedValue = numValue * 1048576;
-					break;
-				case "Gb":
-					convertedValue = numValue * 1073741824;
-					break;
-				default:
-					break;
-			}
-			return convertedValue;
-		};
-
 		const sizeCol = {
 			id: "Size",
 			header: "Size",
 			fillspace: 2,
-			sort: (a, b) => {
-				const {Size: sizeA} = a;
-				const {Size: sizeB} = b;
-				const aConverted = convertedSize(sizeA);
-				const bConverted = convertedSize(sizeB);
-
-				if (aConverted > bConverted) {
-					return 1;
-				}
-				else if (aConverted < bConverted) {
-					return -1;
-				}
-				return 0;
-			}
+			sort: "int",
+			template: "#SizeText#"
 		};
 
 		const deleteCol = {
@@ -75,43 +40,19 @@ export default class FilesTable extends JetView {
 			columns: [nameCol, changeDateCol, sizeCol, deleteCol],
 			css: "webix_data_border webix_header_border activity-table",
 			onClick: {
-				deleteIcon(e, id) {
-					webix
-						.confirm({
-							title: "Delete",
-							text: "Do you want to delete this record? Deleting cannot be undone."
-						})
-						.then(() => {
-							filesDB.remove(id);
-						});
-				}
+				deleteIcon: (e, id) => this.deleteIcon(e, id)
 			}
 		};
 
 		const uploadBtn = {
 			view: "uploader",
 			label: "Upload file",
+			localId: "uploader",
 			css: "customBtn",
 			autosend: false,
 			multiple: false,
 			on: {
-				onAfterFileAdd: function name() {
-					const files = this.files;
-					const id = files.getFirstId();
-					const {
-						name: FileName,
-						sizetext: Size,
-						file: {lastModifiedDate: ChangeDate}
-					} = files.getItem(id);
-
-					const sendData = {
-						FileName,
-						Size,
-						ContactID: this.$scope._contactID,
-						ChangeDate: webix.Date.dateToStr("%Y-%m-%d")(ChangeDate)
-					};
-					filesDB.add(sendData);
-				},
+				onAfterFileAdd: () => this.onAfterFileAdd(),
 				onFileUploadError: (file, res) => {
 					webix.message(`Cannot upload a file. Status: ${res}`);
 				}
@@ -123,12 +64,43 @@ export default class FilesTable extends JetView {
 	}
 
 	urlChange() {
-		const contactID = this.getParam("id");
+		const contactID = this.getParam("id", true);
 		this._contactID = contactID;
 
 		const table = this.$$("table");
-		table.data.sync(filesDB, function filter() {
-			this.filter("#ContactID#", contactID);
+		table.data.sync(filesDB, () => {
+			table.filter(obj => +obj.ContactID === +contactID);
 		});
+	}
+
+	deleteIcon(e, id) {
+		webix
+			.confirm({
+				title: "Delete",
+				text: "Do you want to delete this record? Deleting cannot be undone."
+			})
+			.then(() => {
+				filesDB.remove(id);
+			});
+	}
+
+	onAfterFileAdd() {
+		const files = this.$$("uploader").files;
+		const id = files.getFirstId();
+		const {
+			name: FileName,
+			sizetext: SizeText,
+			size: Size,
+			file: {lastModifiedDate: ChangeDate}
+		} = files.getItem(id);
+
+		const sendData = {
+			FileName,
+			SizeText,
+			Size,
+			ContactID: this._contactID,
+			ChangeDate: webix.Date.dateToStr("%Y-%m-%d")(ChangeDate)
+		};
+		filesDB.add(sendData);
 	}
 }
