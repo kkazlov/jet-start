@@ -166,7 +166,7 @@ export default class Popup extends JetView {
 		this.$$("actionBtn").setValue(this._popupType);
 
 		const head = this.$$("window").getHead();
-		head.$view.innerText = this._popupType;
+		head.getNode().innerText = this._popupType;
 
 		if (table === "contacts") {
 			const input = this.$$("contactsCombo");

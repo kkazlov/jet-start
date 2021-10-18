@@ -44,9 +44,9 @@ export default class ContactForm extends JetView {
 		this._contactID = id;
 		const deleteBtn = this.$$("deleteBtn");
 
-		const formLabel = id ? "Edit" : "Add";
+		const formLabel = id ? "Edit" : "Add new";
 		const actionBtnLabel = id ? "Save" : "Add";
-		this.$$("formLabel").setValue(`${formLabel} a new contact`);
+		this.$$("formLabel").setValue(`${formLabel} contact`);
 		this.$$("actionBtn").setValue(actionBtnLabel);
 
 		if (id) {
