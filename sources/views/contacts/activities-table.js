@@ -128,10 +128,6 @@ export default class ActivitiesTable extends JetView {
 
 	init() {
 		this._popup = this.ui(Popup);
-		const table = this.$$("activitiesTable");
-		this.on(activitiesDB.data, "onStoreUpdated", (id) => {
-			if (id) table.filterByAll();
-		});
 	}
 
 	urlChange() {
@@ -142,8 +138,8 @@ export default class ActivitiesTable extends JetView {
 			this._contactID = contactID;
 			table.data.sync(activitiesDB, () => {
 				table.filter(obj => +obj.ContactID === +contactID);
+				table.filterByAll();
 			});
-			table.filterByAll();
 		});
 	}
 
