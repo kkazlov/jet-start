@@ -21,12 +21,7 @@ export default class ActivitiesTable extends JetView {
 			id: "ActivityType",
 			header: {
 				content: "selectFilter",
-				compare: (cellValue, filterValue, obj) => {
-					if (+obj.ContactID === +this._contactID) {
-						return +obj.TypeID === +filterValue;
-					}
-					return false;
-				}
+				compare: (cellValue, filterValue, obj) => +obj.TypeID === +filterValue
 			},
 
 			fillspace: 3,
@@ -80,8 +75,7 @@ export default class ActivitiesTable extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () =>
-				"<span class='far fa-edit editIcon table-icon'></span>"
+			template: () => "<span class='far fa-edit editIcon table-icon'></span>"
 		};
 
 		const deleteCol = {
@@ -89,8 +83,7 @@ export default class ActivitiesTable extends JetView {
 			header: "",
 			fillspace: 1,
 			css: {"text-align": "center"},
-			template: () =>
-				"<span class='far fa-trash-alt deleteIcon table-icon'></span>"
+			template: () => "<span class='far fa-trash-alt deleteIcon table-icon'></span>"
 		};
 
 		const datatable = {
@@ -110,12 +103,9 @@ export default class ActivitiesTable extends JetView {
 				editIcon: (e, id) => this.editIcon(e, id)
 			},
 			on: {
-				onBeforeFilter(id, value) {
-					if (id === "ActivityType") {
-						if (!value) {
-							this.filter((obj) => obj.ContactID === this.$scope._contactID);
-						}
-					}
+				onAfterFilter() {
+					const contactID = this.$scope.getParam("id", true);
+					this.filter(obj => +obj.ContactID === +contactID, "", true);
 				}
 			}
 		};
@@ -139,49 +129,24 @@ export default class ActivitiesTable extends JetView {
 	init() {
 		this._popup = this.ui(Popup);
 		const table = this.$$("activitiesTable");
-		/* const contactID = this.getParam("id", true);
-		table.data.sync(activitiesDB, function filter() {
-			this.filter("#ContactID#", contactID);
-		});
-
 		this.on(activitiesDB.data, "onStoreUpdated", (id) => {
-			if (id) table.filter("#ContactID#", contactID);
-		}); */
-		/* this.on(table, "onBeforeFilter", (id, value) => {
-			if (id === "ActivityType") {
-				if (!value) {
-					const contactID = this.getParam("id", true);
-					table.data.sync(activitiesDB, function filter() {
-						this.filter("#ContactID#", contactID);
-					});
-				}
-			}
-		}); */
-
-		/* this.on(table, "onCheck", () => {
-			table.filterByAll();
+			if (id) table.filterByAll();
 		});
-		this.on(activitiesDB.data, "onDataUpdate", () => {
-			table.filterByAll();
-		});
-		this.on(activitiesDB.data, "onAfterDelete", () => {
-			table.filterByAll();
-		});
-		this.on(activitiesDB.data, "onAfterAdd", () => {
-			table.filterByAll();
-		}); */
 	}
 
 	urlChange() {
 		const table = this.$$("activitiesTable");
-		const contactID = +this.getParam("id", true);
-		this._contactID = contactID;
 
-		table.data.sync(activitiesDB, function filter() {
-			this.filter(obj => obj.ContactID === contactID);
+		activitiesDB.waitData.then(() => {
+			const contactID = this.getParam("id", true);
+			this._contactID = contactID;
+			table.data.sync(activitiesDB, () => {
+				table.filter(obj => +obj.ContactID === +contactID);
+			});
+			table.filterByAll();
 		});
-		table.filterByAll();
 	}
+
 
 	deleteIcon(e, id) {
 		webix
