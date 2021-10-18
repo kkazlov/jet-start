@@ -39,15 +39,7 @@ export default class ActivitiesTable extends JetView {
 
 		const dueDateCol = {
 			id: "Date",
-			header: {
-				content: "datepickerFilter",
-				compare: (cellValue, filterValue, obj) => {
-					if (+obj.ContactID === +this._contactID) {
-						return +cellValue === +filterValue;
-					}
-					return false;
-				}
-			},
+			header: [{content: "datepickerFilter"}],
 			fillspace: 3,
 			sort: "string",
 			format: webix.i18n.longDateFormatStr
@@ -55,17 +47,7 @@ export default class ActivitiesTable extends JetView {
 
 		const detailsCol = {
 			id: "Details",
-			header: {
-				content: "textFilter",
-				compare: (cellValue, filterValue, obj) => {
-					const _cellValue = cellValue.toLowerCase();
-					const _filterValue = filterValue.toLowerCase();
-					if (+obj.ContactID === +this._contactID) {
-						return _cellValue.indexOf(_filterValue) !== -1;
-					}
-					return false;
-				}
-			},
+			header: [{content: "textFilter"}],
 			sort: "string",
 			fillspace: 6
 		};
