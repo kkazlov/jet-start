@@ -166,8 +166,7 @@ export default class ContactForm extends JetView {
 		const PhoneElem = {
 			view: "text",
 			label: "Phone",
-			name: "Phone",
-			required: true
+			name: "Phone"
 		};
 
 		const BirthdayElem = {
@@ -342,7 +341,7 @@ export default class ContactForm extends JetView {
 			Address: value => value.length <= 50,
 			Email: value => value.length <= 20 && webix.rules.isEmail(value),
 			Skype: value => value.length <= 20,
-			Phone: value => value.length <= 20 && webix.rules.isNumber(value)
+			Phone: value => value.length <= 20
 		};
 	}
 }
