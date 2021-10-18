@@ -1,174 +1,164 @@
 import {JetView} from "webix-jet";
 
-import contactsDB from "../models/contactsDB";
-import statusesDB from "../models/statusesDB";
-import "../styles/contacts.css";
+import activitiesDB from "../../models/activitiesDB";
+import contactsDB from "../../models/contactsDB";
+import filesDB from "../../models/filesDB";
+import statusesDB from "../../models/statusesDB";
+import "../../styles/info.css";
 
-
-export default class Contacts extends JetView {
+export default class Info extends JetView {
 	config() {
-		const list = {
-			view: "list",
-			localId: "list",
-			minWidth: 200,
-			template: ({Photo, FirstName, LastName, Company}) => {
-				const _photo = Photo || "https://via.placeholder.com/550";
-				return `
-				<div class="contact__item">
-					<div class="contact__photo">
-						<img src=${_photo} alt="Photo">
-					</div>
-					<div class="contact__name">
-						<div>${FirstName} ${LastName}</div>
-						<div>${Company}</div>
-					</div>
-				</div>
-				`;
-			},
-			select: true
+		const deleteRecords = (dataBase, id) => {
+			const recordsArr = dataBase.data.find(
+				obj => +obj.ContactID === +id
+			);
+			recordsArr.forEach((item) => {
+				dataBase.remove(item.id);
+			});
 		};
 
-		const btnDelete = {
+		const BtnDelete = {
 			view: "button",
 			type: "icon",
 			width: 120,
 			height: 50,
 			icon: "far fa-trash-alt",
 			label: "Delete",
-			css: "customBtn"
+			css: "customBtn",
+			click: () => {
+				webix
+					.confirm({
+						title: "Delete",
+						text: "Do you want to delete this contact? Deleting cannot be undone."
+					})
+					.then(() => {
+						const id = this.getParam("id", true);
+						const parentView = this.getParentView().getParentView();
+
+						deleteRecords(activitiesDB, id);
+						deleteRecords(filesDB, id);
+
+						contactsDB.remove(id);
+
+						parentView.setParam("list", "first", true);
+					});
+			}
 		};
 
-		const btnEdit = {
+		const BtnEdit = {
 			view: "button",
 			type: "icon",
 			width: 120,
 			height: 50,
 			icon: "far fa-edit",
 			label: "Edit",
-			css: "customBtn"
+			css: "customBtn",
+			click: () => {
+				this.show("contacts.contact-form");
+			}
 		};
 
-		const infoHead = {
+		const InfoHead = {
 			type: "clean",
+			paddingY: 10,
 			margin: 10,
 			cols: [
 				{
 					localId: "infoTitle",
 					borderless: true,
 					autoheight: true,
+					width: 600,
 					template: ({FirstName, LastName}) => `${FirstName} ${LastName}`,
-					css: "info__label",
-					ready() {
-						this.refresh();
-					}
+					css: "info__label"
 				},
 				{},
-				btnDelete,
-				btnEdit
+				BtnDelete,
+				BtnEdit
 			]
 		};
 
-		const infoMain = {
+		const InfoMain = {
 			localId: "infoMain",
 			borderless: true,
 			template: this.infoTemplate()
 		};
 
-		return {
-			cols: [
-				list,
-				{
-					gravity: 3,
-					padding: 15,
-					margin: 30,
-					type: "clean",
-					rows: [infoHead, infoMain, {}]
-				}
-			]
-		};
+		return {rows: [InfoHead, InfoMain]};
 	}
 
-	init() {
-		const list = this.$$("list");
-
+	urlChange() {
+		const title = this.$$("infoTitle");
+		const main = this.$$("infoMain");
 		contactsDB.waitData.then(() => {
-			list.parse(contactsDB);
-			const initSelect = list.getFirstId();
-			list.select(initSelect);
-		});
-	}
-
-	ready() {
-		const list = this.$$("list");
-		this.on(list, "onAfterSelect", (id) => {
-			const title = this.$$("infoTitle");
-			const main = this.$$("infoMain");
-
+			const id = this.getParam("id", true);
 			const contact = contactsDB.getItem(id);
 			const statusID = contact.StatusID;
 			statusesDB.waitData.then(() => {
-				const statuses = statusesDB.getItem(statusID);
+				const statuses = statusesDB.getItem(statusID) || {Value: "", Icon: ""};
 				const {Value: status, Icon: icon} = statuses;
-				main.setValues({...contact, Status: status, StatusIcon: icon}, true);
+				main.setValues(
+					{...contact, Status: status, StatusIcon: icon},
+					true
+				);
 			});
 			title.parse(contact);
 		});
 	}
 
 	infoTemplate() {
-		const infoTemplate = ({
+		const template = ({
 			Photo,
 			Email,
 			Skype,
 			Job,
 			Company,
-			Birthday,
 			Address,
-			Status = "No status",
-			StatusIcon = ""
+			Status,
+			StatusIcon = "",
+			_birthday
 		}) => {
+			const _status = Status || "No status";
 			const _photo = Photo || "https://via.placeholder.com/550";
-
 			return `
 			<div class="info">
 				<div class="info__block">
 					<div class="info__photo">
 						<img src=${_photo} alt="photo">
 					</div>
-
+	
 					<div class="info__status">
-						<span class="status-name">${Status}</span>
+						<span class="status-name">${_status}</span>
 						<span class='fas fa-${StatusIcon}'></span>
 					</div>
 				</div>
-
-
+	
+	
 				<div class="info__items">
 					<div class="info__item">
 						<span class="fas fa-envelope"></span>
 						<span>Email: ${Email}</span>
 					</div>
-
+	
 					<div class="info__item">
 						<span class="fab fa-skype"></span>
 						<span>Skype: ${Skype}</span>
 					</div>
-
+	
 					<div class="info__item">
 						<span class="fas fa-tag"></span>
 						<span>Job: ${Job}</span>
 					</div>
-
+	
 					<div class="info__item">
 						<span class="fas fa-briefcase"></span>
 						<span>Company: ${Company}</span>
 					</div>
-
+	
 					<div class="info__item">
 						<span class="far fa-calendar-alt"></span>
-						<span>Date of birth: ${Birthday}</span>
+						<span>Date of birth: ${_birthday}</span>
 					</div>
-
+	
 					<div class="info__item">
 						<span class="fas fa-map-marker-alt"></span>
 						<span>Location: ${Address}</span>
@@ -177,6 +167,6 @@ export default class Contacts extends JetView {
 			</div>
 		`;
 		};
-		return infoTemplate;
+		return template;
 	}
 }

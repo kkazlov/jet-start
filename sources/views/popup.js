@@ -154,8 +154,8 @@ export default class Popup extends JetView {
 		});
 	}
 
-	showWindow(id) {
-		if (id) {
+	showWindow({id = "", mode = "add", table = "activities"}) {
+		if (mode === "edit") {
 			this._popupType = "Edit";
 			this.getActivity(id);
 		}
@@ -166,7 +166,13 @@ export default class Popup extends JetView {
 		this.$$("actionBtn").setValue(this._popupType);
 
 		const head = this.$$("window").getHead();
-		head.$view.innerText = this._popupType;
+		head.getNode().innerText = this._popupType;
+
+		if (table === "contacts") {
+			const input = this.$$("contactsCombo");
+			input.setValue(id);
+			input.disable();
+		}
 
 		this.getRoot().show();
 	}
