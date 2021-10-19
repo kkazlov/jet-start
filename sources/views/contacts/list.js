@@ -81,6 +81,7 @@ export default class ListView extends JetView {
 
 	urlChange(view, url) {
 		const list = this.$$("list");
+		const input = this.$$("input");
 		const addBtn = this.$$("addBtn");
 		const listParam = url[0].params.list;
 		const idParam = url[0].params.id;
@@ -89,11 +90,18 @@ export default class ListView extends JetView {
 			list.disable();
 			list.unselect();
 			addBtn.disable();
+
+			input.disable();
+			input.setValue("");
+			list.filter();
 		}
 		else {
+			input.enable();
 			list.enable();
 			addBtn.enable();
 			if (listParam && listParam !== "unselect") {
+				input.setValue("");
+				list.filter();
 				let id;
 				switch (listParam) {
 					case "first":
