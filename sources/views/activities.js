@@ -6,9 +6,35 @@ import contactsDB from "../models/contactsDB";
 import Popup from "./popup";
 import TableView from "./tableView";
 
-
 export default class Activities extends JetView {
 	config() {
+		const filterBtns = {
+			view: "segmented",
+			localId: "filterBtns",
+			value: "all",
+			options: [
+				{id: "all", value: "All"},
+				{id: "overdue", value: "Overdue"},
+				{id: "completed", value: "Completed"},
+				{id: "today", value: "Today"},
+				{id: "tomorrow", value: "Tomorrow"},
+				{id: "week", value: "This week"},
+				{id: "month", value: "This month"}
+			],
+			on: {
+				onAfterTabClick: (id) => {
+					const table = this.$$("table");
+					if (id === "completed") {
+						table.filter("#State#", "Close", true);
+					}
+					if (id === "all") {
+						table.filterByAll();
+					}
+				}
+			},
+			css: "filterBtns"
+		};
+
 		const addBtn = {
 			view: "button",
 			type: "icon",
@@ -25,18 +51,28 @@ export default class Activities extends JetView {
 		const datatable = TableView("activities", {activityTypesDB, contactsDB});
 
 		return {
-			rows: [{paddingX: 15, paddingY: 5, cols: [{}, addBtn]}, datatable]
+			rows: [{paddingX: 15, paddingY: 5, margin: 60, cols: [filterBtns, addBtn]}, datatable]
 		};
 	}
 
 	init() {
 		this._popup = this.ui(Popup);
 		const table = this.$$("table");
+		const filterBtns = this.$$("filterBtns");
+
 		table.parse(activitiesDB);
 
 		this.on(activitiesDB.data, "onStoreUpdated", (id) => {
 			if (id) table.filterByAll();
 		});
+
+		this.on(table, "onAfterFilter", () => {
+			const btnValue = filterBtns.getValue();
+			if (btnValue === "completed") {
+				table.filter("#State#", "Close", true);
+			}
+		});
+
 
 		this.on(table, "onItemClick", (id, e) => {
 			const editIcon = "far fa-edit editIcon table-icon";

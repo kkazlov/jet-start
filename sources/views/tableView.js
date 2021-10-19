@@ -118,6 +118,7 @@ const TableView = (type, collections) => {
 	}
 	else columns = [...tableColumns];
 
+
 	const datatable = {
 		view: "datatable",
 		localId: "table",
