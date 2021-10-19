@@ -4,7 +4,6 @@ import activitiesDB from "../../models/activitiesDB";
 import contactsDB from "../../models/contactsDB";
 import filesDB from "../../models/filesDB";
 import statusesDB from "../../models/statusesDB";
-import "../../styles/info.css";
 
 export default class Info extends JetView {
 	config() {

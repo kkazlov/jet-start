@@ -1,5 +1,4 @@
 import {JetView, plugins} from "webix-jet";
-import "../styles/menu.css";
 
 export default class TopView extends JetView {
 	config() {

@@ -6,7 +6,6 @@ import contactsDB from "../models/contactsDB";
 import Popup from "./popup";
 import TableView from "./tableView";
 
-import "../styles/activities.css";
 
 export default class Activities extends JetView {
 	config() {
