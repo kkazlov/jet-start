@@ -4,6 +4,12 @@ import contactsDB from "../../models/contactsDB";
 
 export default class ListView extends JetView {
 	config() {
+		const Input = {
+			view: "text",
+			localId: "input",
+			placeholder: "Type to find matching contacts"
+		};
+
 		const List = {
 			view: "list",
 			localId: "list",
@@ -40,18 +46,36 @@ export default class ListView extends JetView {
 		};
 
 		return {
-			rows: [List, AddContactBtn]
+			rows: [Input, List, AddContactBtn]
 		};
 	}
 
 	init() {
 		const list = this.$$("list");
+		const input = this.$$("input");
 		this.setParam("list", false, true);
 
 		contactsDB.waitData.then(() => {
 			list.parse(contactsDB);
 			const initSelect = list.getFirstId();
 			list.select(initSelect);
+		});
+
+		this.on(input, "onTimedKeyPress", () => {
+			const inputValue = input.getValue().toLowerCase();
+			const matchValue = (obj, value) => obj.toLowerCase().indexOf(value) !== -1;
+
+			list.filter(({value, Company, Address, Job, Skype, Email, Website}) => {
+				const fullName = matchValue(value, inputValue);
+				const company = matchValue(Company, inputValue);
+				const address = matchValue(Address, inputValue);
+				const job = matchValue(Job, inputValue);
+				const skype = matchValue(Skype, inputValue);
+				const email = matchValue(Email, inputValue);
+				const website = matchValue(Website, inputValue);
+
+				return fullName || company || address || job || skype || email || website;
+			});
 		});
 	}
 

@@ -61,8 +61,6 @@ export default class Activities extends JetView {
 	init() {
 		this._popup = this.ui(Popup);
 		const table = this.$$("table");
-
-
 		table.parse(activitiesDB);
 
 		this.on(activitiesDB.data, "onStoreUpdated", (id) => {
