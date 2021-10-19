@@ -98,37 +98,31 @@ export default class Activities extends JetView {
 	}
 
 	overdueFilter(obj) {
-		const date = webix.i18n.dateFormatStr(obj.Date);
-		const today = webix.i18n.dateFormatStr(new Date());
-		return obj.State === "Open" && date < today;
+		const today = new Date().setHours(0, 0, 0, 0);
+		return obj.State === "Open" && obj.Date < today;
 	}
 
 	todayFilter(obj) {
-		const date = webix.i18n.dateFormatStr(obj.Date);
-		const today = webix.i18n.dateFormatStr(new Date());
-		return date === today;
+		const today = new Date().setHours(0, 0, 0, 0);
+		return +obj.Date === +today;
 	}
 
 	tommorowFilter(obj) {
-		const tomorrow = +new Date() + 1000 * 60 * 60 * 24;
-		const date = webix.i18n.dateFormatStr(obj.Date);
-		const tomorrowStr = webix.i18n.dateFormatStr(new Date(tomorrow));
-		return date === tomorrowStr;
+		const tomorrow = +new Date().setHours(0, 0, 0, 0) + 1000 * 60 * 60 * 24;
+		return +obj.Date === tomorrow;
 	}
 
 	weekFilter(obj) {
 		const today = new Date();
-
+		const date = +obj.Date;
+		const todayNoTime = +today.setHours(0, 0, 0, 0);
 		const dayIndex = today.getDay();
 		const dayInMs = 1000 * 60 * 60 * 24;
-		const startWeek = +today - dayInMs * dayIndex;
-		const endWeek = +today + dayInMs * (6 - dayIndex);
 
-		const dateStr = webix.i18n.dateFormatStr(obj.Date);
-		const startWeekStr = webix.i18n.dateFormatStr(new Date(startWeek));
-		const endWeekStr = webix.i18n.dateFormatStr(new Date(endWeek));
+		const startWeek = todayNoTime - dayInMs * dayIndex;
+		const endWeek = todayNoTime + dayInMs * (6 - dayIndex);
 
-		return dateStr >= startWeekStr && dateStr <= endWeekStr;
+		return date >= startWeek && date <= endWeek;
 	}
 
 	monthFilter(obj) {
