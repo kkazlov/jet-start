@@ -22,15 +22,7 @@ export default class Activities extends JetView {
 				{id: "month", value: "This month"}
 			],
 			on: {
-				onAfterTabClick: (id) => {
-					const table = this.$$("table");
-					if (id === "completed") {
-						table.filter("#State#", "Close", true);
-					}
-					if (id === "all") {
-						table.filterByAll();
-					}
-				}
+				onAfterTabClick: id => this.onAfterTabClick(id)
 			},
 			css: "filterBtns"
 		};
@@ -48,17 +40,28 @@ export default class Activities extends JetView {
 			}
 		};
 
-		const datatable = TableView("activities", {activityTypesDB, contactsDB});
+		const datatable = TableView("activities", {
+			activityTypesDB,
+			contactsDB
+		});
 
 		return {
-			rows: [{paddingX: 15, paddingY: 5, margin: 60, cols: [filterBtns, addBtn]}, datatable]
+			rows: [
+				{
+					paddingX: 15,
+					paddingY: 5,
+					margin: 60,
+					cols: [filterBtns, addBtn]
+				},
+				datatable
+			]
 		};
 	}
 
 	init() {
 		this._popup = this.ui(Popup);
 		const table = this.$$("table");
-		const filterBtns = this.$$("filterBtns");
+
 
 		table.parse(activitiesDB);
 
@@ -66,43 +69,159 @@ export default class Activities extends JetView {
 			if (id) table.filterByAll();
 		});
 
-		this.on(table, "onAfterFilter", () => {
-			const btnValue = filterBtns.getValue();
-			if (btnValue === "completed") {
+		this.on(table, "onAfterFilter", () => this.onAfterFilter());
+
+		this.on(table, "onItemClick", (id, e) => this.onEditIcon(id, e));
+		this.on(table, "onItemClick", (id, e) => this.onDeleteIcon(id, e));
+	}
+
+
+	onDeleteIcon(id, e) {
+		const editIcon = "far fa-trash-alt deleteIcon table-icon";
+		const className = e.target.className;
+		if (editIcon === className) {
+			webix
+				.confirm({
+					title: "Delete",
+					text: "Do you want to delete this record? Deleting cannot be undone."
+				})
+				.then(() => {
+					activitiesDB.remove(id);
+				});
+		}
+	}
+
+	onEditIcon(id, e) {
+		const editIcon = "far fa-edit editIcon table-icon";
+		const className = e.target.className;
+		if (editIcon === className) {
+			this._popup.showWindow({id, mode: "edit", table: "activities"});
+		}
+	}
+
+	overdueFilter(obj) {
+		const date = webix.i18n.dateFormatStr(obj.Date);
+		const today = webix.i18n.dateFormatStr(new Date());
+		return obj.State === "Open" && date < today;
+	}
+
+	todayFilter(obj) {
+		const date = webix.i18n.dateFormatStr(obj.Date);
+		const today = webix.i18n.dateFormatStr(new Date());
+		return date === today;
+	}
+
+	tommorowFilter(obj) {
+		const tomorrow = +new Date() + 1000 * 60 * 60 * 24;
+		const date = webix.i18n.dateFormatStr(obj.Date);
+		const tomorrowStr = webix.i18n.dateFormatStr(new Date(tomorrow));
+		return date === tomorrowStr;
+	}
+
+	weekFilter(obj) {
+		const today = new Date();
+
+		const dayIndex = today.getDay();
+		const dayInMs = 1000 * 60 * 60 * 24;
+		const startWeek = +today - dayInMs * dayIndex;
+		const endWeek = +today + dayInMs * (6 - dayIndex);
+
+		const dateStr = webix.i18n.dateFormatStr(obj.Date);
+		const startWeekStr = webix.i18n.dateFormatStr(new Date(startWeek));
+		const endWeekStr = webix.i18n.dateFormatStr(new Date(endWeek));
+
+		return dateStr >= startWeekStr && dateStr <= endWeekStr;
+	}
+
+	monthFilter(obj) {
+		const today = new Date();
+
+		const thisYear = today.getFullYear();
+		const thisMonth = today.getMonth();
+
+		const objYear = obj.Date.getFullYear();
+		const objMonth = obj.Date.getMonth();
+
+		return thisYear === objYear && thisMonth === objMonth;
+	}
+
+	onAfterTabClick(id) {
+		const table = this.$$("table");
+		switch (id) {
+			case "all":
+				table.filterByAll();
+				break;
+
+			case "overdue":
+				table.filterByAll();
+				table.filter(obj => this.overdueFilter(obj), "", true);
+				break;
+
+			case "completed":
+				table.filterByAll();
 				table.filter("#State#", "Close", true);
-			}
-		});
+				break;
 
+			case "today":
+				table.filterByAll();
+				table.filter(obj => this.todayFilter(obj), "", true);
+				break;
 
-		this.on(table, "onItemClick", (id, e) => {
-			const editIcon = "far fa-edit editIcon table-icon";
-			const className = e.target.className;
-			if (editIcon === className) {
-				this.editIcon(e, id);
-			}
-		});
+			case "tomorrow":
+				table.filterByAll();
+				table.filter(obj => this.tommorowFilter(obj), "", true);
+				break;
 
-		this.on(table, "onItemClick", (id, e) => {
-			const editIcon = "far fa-trash-alt deleteIcon table-icon";
-			const className = e.target.className;
-			if (editIcon === className) {
-				this.deleteIcon(e, id);
-			}
-		});
+			case "week":
+				table.filterByAll();
+				table.filter(obj => this.weekFilter(obj), "", true);
+				break;
+
+			case "month":
+				table.filterByAll();
+				table.filter(obj => this.monthFilter(obj), "", true);
+				break;
+
+			default:
+				break;
+		}
 	}
 
-	deleteIcon(e, id) {
-		webix
-			.confirm({
-				title: "Delete",
-				text: "Do you want to delete this record? Deleting cannot be undone."
-			})
-			.then(() => {
-				activitiesDB.remove(id);
-			});
-	}
+	onAfterFilter() {
+		const filterBtns = this.$$("filterBtns");
+		const table = this.$$("table");
+		const btnValue = filterBtns.getValue();
 
-	editIcon(e, id) {
-		this._popup.showWindow({id, mode: "edit", table: "activities"});
+		switch (btnValue) {
+			case "all":
+				break;
+
+			case "overdue":
+				table.filter(obj => this.overdueFilter(obj), "", true);
+				break;
+
+			case "completed":
+				table.filter("#State#", "Close", true);
+				break;
+
+			case "today":
+				table.filter(obj => this.todayFilter(obj), "", true);
+				break;
+
+			case "tomorrow":
+				table.filter(obj => this.tommorowFilter(obj), "", true);
+				break;
+
+			case "week":
+				table.filter(obj => this.weekFilter(obj), "", true);
+				break;
+
+			case "month":
+				table.filter(obj => this.monthFilter(obj), "", true);
+				break;
+
+			default:
+				break;
+		}
 	}
 }

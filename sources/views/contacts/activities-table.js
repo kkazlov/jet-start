@@ -33,21 +33,9 @@ export default class ActivitiesTable extends JetView {
 			table.data.filter(obj => +obj.ContactID === +contactID, "", true);
 		});
 
-		this.on(table, "onItemClick", (id, e) => {
-			const editIcon = "far fa-edit editIcon table-icon";
-			const className = e.target.className;
-			if (editIcon === className) {
-				this.editIcon(e, id);
-			}
-		});
 
-		this.on(table, "onItemClick", (id, e) => {
-			const editIcon = "far fa-trash-alt deleteIcon table-icon";
-			const className = e.target.className;
-			if (editIcon === className) {
-				this.deleteIcon(e, id);
-			}
-		});
+		this.on(table, "onItemClick", (id, e) => this.onEditIcon(id, e));
+		this.on(table, "onItemClick", (id, e) => this.onDeleteIcon(id, e));
 	}
 
 	urlChange() {
@@ -63,24 +51,27 @@ export default class ActivitiesTable extends JetView {
 		});
 	}
 
-
-	deleteIcon(e, id) {
-		webix
-			.confirm({
-				title: "Delete",
-				text: "Do you want to delete this record? Deleting cannot be undone."
-			})
-			.then(() => {
-				activitiesDB.remove(id);
-			});
+	onDeleteIcon(id, e) {
+		const editIcon = "far fa-trash-alt deleteIcon table-icon";
+		const className = e.target.className;
+		if (editIcon === className) {
+			webix
+				.confirm({
+					title: "Delete",
+					text: "Do you want to delete this record? Deleting cannot be undone."
+				})
+				.then(() => {
+					activitiesDB.remove(id);
+				});
+		}
 	}
 
-	editIcon(e, id) {
-		this._popup.showWindow({
-			id,
-			mode: "edit",
-			table: "contacts"
-		});
+	onEditIcon(id, e) {
+		const editIcon = "far fa-edit editIcon table-icon";
+		const className = e.target.className;
+		if (editIcon === className) {
+			this._popup.showWindow({id, mode: "edit", table: "contacts"});
+		}
 	}
 
 	addActivity() {
