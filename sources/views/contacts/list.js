@@ -99,10 +99,13 @@ export default class ListView extends JetView {
 			input.enable();
 			list.enable();
 			addBtn.enable();
+
 			if (listParam && listParam !== "unselect") {
+				let id;
+
 				input.setValue("");
 				list.filter();
-				let id;
+
 				switch (listParam) {
 					case "first":
 						id = list.getFirstId();
