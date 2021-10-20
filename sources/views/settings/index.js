@@ -4,7 +4,6 @@ import activityTypesDB from "../../models/activityTypesDB";
 import statusesDB from "../../models/statusesDB";
 import SettingsConstr from "./settings-constr";
 
-
 export default class Settings extends JetView {
 	config() {
 		const ActivitySetting = new SettingsConstr(this.app, {
@@ -17,15 +16,19 @@ export default class Settings extends JetView {
 			label: "Status"
 		});
 
+		const value = this.app.getService("locale").getLang();
+
 		const Language = [
 			{view: "label", label: "Language"},
 			{
-				view: "tabbar",
-				value: "en",
+				view: "segmented",
+				name: "lang",
 				options: [
-					{id: "en", value: "en"},
-					{id: "ru", value: "ru"}
-				]
+					{id: "en", value: "EN"},
+					{id: "ru", value: "RU"}
+				],
+				value,
+				click: () => this.toggleLanguage()
 			}
 		];
 
@@ -57,5 +60,11 @@ export default class Settings extends JetView {
 				}
 			]
 		};
+	}
+
+	toggleLanguage() {
+		const langs = this.app.getService("locale");
+		const value = this.getRoot().queryView({name: "lang"}).getValue();
+		langs.setLang(value);
 	}
 }
