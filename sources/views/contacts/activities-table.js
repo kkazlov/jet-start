@@ -8,14 +8,16 @@ import TableView from "../tableView";
 
 export default class ActivitiesTable extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		const datatable = TableView("contact", {activityTypesDB});
 		const AddActivityBtn = {
 			view: "button",
 			type: "icon",
 			icon: "fas fa-plus-square",
-			width: 180,
+			width: 200,
 			height: 40,
-			label: "Add activity",
+			label: _("Add activity"),
 			css: "customBtn",
 			click: () => this.addActivity()
 		};

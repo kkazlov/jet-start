@@ -5,6 +5,8 @@ import statusesDB from "../../models/statusesDB";
 
 export default class ContactForm extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		const label = {
 			view: "label",
 			localId: "formLabel",
@@ -20,8 +22,8 @@ export default class ContactForm extends JetView {
 			rows: this.formElements(),
 			rules: this.formRules(),
 			elementsConfig: {
-				invalidMessage: "Enter the correct value!",
-				labelWidth: 90
+				invalidMessage: _("Enter the correct value!"),
+				labelWidth: 100
 			},
 			on: {
 				onChange() {
@@ -40,29 +42,28 @@ export default class ContactForm extends JetView {
 	}
 
 	urlChange() {
+		const _ = this.app.getService("locale")._;
+
 		const id = this.getParam("id", true);
 		this._contactID = id;
 		const deleteBtn = this.$$("deleteBtn");
 
 		const formLabel = id ? "Edit" : "Add new";
 		const actionBtnLabel = id ? "Save" : "Add";
-		this.$$("formLabel").setValue(`${formLabel} contact`);
-		this.$$("actionBtn").setValue(actionBtnLabel);
+		this.$$("formLabel").setValue(_(`${formLabel} contact`));
+		this.$$("actionBtn").setValue(_(actionBtnLabel));
 
 		if (id) {
-			const photo = contactsDB.getItem(id).Photo;
-			if (!photo) {
-				deleteBtn.disable();
-			}
-			else {
-				deleteBtn.enable();
-			}
+			contactsDB.waitData.then(() => {
+				const photo = contactsDB.getItem(id).Photo || "";
 
-			this.getContact(id);
+				if (!photo) deleteBtn.disable();
+				else deleteBtn.enable();
+
+				this.getContact(id);
+			});
 		}
-		else {
-			deleteBtn.disable();
-		}
+		else deleteBtn.disable();
 	}
 
 	closeForm(select = "current") {
@@ -88,16 +89,18 @@ export default class ContactForm extends JetView {
 	}
 
 	formElements() {
+		const _ = this.app.getService("locale")._;
+
 		const FirsNameElem = {
 			view: "text",
-			label: "First name",
+			label: _("First name"),
 			name: "FirstName",
 			required: true
 		};
 
 		const LastNameElem = {
 			view: "text",
-			label: "Last name",
+			label: _("Last name"),
 			name: "LastName",
 			required: true
 		};
@@ -106,14 +109,14 @@ export default class ContactForm extends JetView {
 			view: "datepicker",
 			localId: "StartDate",
 			value: new Date(),
-			label: "Joining",
+			label: _("Joining"),
 			name: "StartDate",
 			required: true
 		};
 
 		const StatusElem = {
 			view: "combo",
-			label: "Status",
+			label: _("Status"),
 			options: {
 				body: {
 					data: statusesDB,
@@ -126,26 +129,26 @@ export default class ContactForm extends JetView {
 
 		const JobElem = {
 			view: "text",
-			label: "Job",
+			label: _("Job"),
 			name: "Job"
 		};
 
 		const CompanyElem = {
 			view: "text",
-			label: "Company",
+			label: _("Company"),
 			name: "Company",
 			required: true
 		};
 
 		const WebsiteElem = {
 			view: "text",
-			label: "Website",
+			label: _("Website"),
 			name: "Website"
 		};
 
 		const AddressElem = {
 			view: "textarea",
-			label: "Address",
+			label: _("Address"),
 			name: "Address",
 			height: 65
 		};
@@ -165,20 +168,20 @@ export default class ContactForm extends JetView {
 
 		const PhoneElem = {
 			view: "text",
-			label: "Phone",
+			label: _("Phone"),
 			name: "Phone"
 		};
 
 		const BirthdayElem = {
 			view: "datepicker",
-			label: "Birthday",
+			label: _("Birthday"),
 			name: "Birthday",
 			required: true
 		};
 
 		const ChangeBtn = {
 			view: "uploader",
-			label: "Change photo",
+			label: _("Change photo"),
 			css: "customBtn",
 			accept: "image/jpeg, image/png",
 			autosend: false,
@@ -202,11 +205,11 @@ export default class ContactForm extends JetView {
 		const DeleteBtn = {
 			view: "button",
 			localId: "deleteBtn",
-			label: "Delete photo",
+			label: _("Delete photo"),
 			css: "customBtn",
 			click: () => {
 				const template = this.$$("photoTemplate");
-				const photo = template.data.Photo;
+				const photo = template.data.Photo || "";
 				if (photo) {
 					template.setValues({Photo: ""});
 					this.$$("deleteBtn").disable();
@@ -242,7 +245,7 @@ export default class ContactForm extends JetView {
 
 		const CancelBtn = {
 			view: "button",
-			label: "Cancel",
+			label: _("Cancel"),
 			width: 150,
 			css: "customBtn",
 			click: () => {
@@ -259,7 +262,7 @@ export default class ContactForm extends JetView {
 			view: "button",
 			localId: "actionBtn",
 			width: 150,
-			value: "Add",
+			value: _("Add"),
 			css: "customBtn",
 			click: () => {
 				const form = this.$$("form");
