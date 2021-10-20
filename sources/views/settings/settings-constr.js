@@ -10,42 +10,47 @@ export default class SettingsConstr extends JetView {
 	}
 
 	config() {
+		const rules = {
+			Value: value => value.length <= 15 && webix.rules.isNotEmpty(value),
+			Icon: value => value.length <= 15 && webix.rules.isNotEmpty(value)
+		};
+
+		const tableColumns = [
+			{
+				id: "Value",
+				header: "Value",
+				fillspace: 6,
+				editor: "text"
+			},
+			{
+				id: "Icon",
+				header: "Icon",
+				fillspace: 6,
+				editor: "text"
+			},
+			{
+				id: "delete",
+				header: "",
+				fillspace: 1,
+				css: {"text-align": "center"},
+				template: () => "<span class='far fa-trash-alt deleteIcon table-icon'></span>"
+			}
+		];
+
 		const Table = {
 			view: "datatable",
 			localId: "table",
 			editable: true,
 			css: "webix_data_border webix_header_border activity-table",
-			columns: [
-				{
-					id: "Value",
-					header: "Value",
-					fillspace: 6,
-					editor: "text"
-				},
-				{
-					id: "Icon",
-					header: "Icon",
-					fillspace: 6,
-					editor: "text"
-				},
-				{
-					id: "delete",
-					header: "",
-					fillspace: 1,
-					css: {"text-align": "center"},
-					template: () => "<span class='far fa-trash-alt deleteIcon table-icon'></span>"
-				}
-			],
+			columns: tableColumns,
 			onClick: {
 				deleteIcon: (e, id) => this.deleteIcon(e, id)
 			},
-			rules: {
-				Value: webix.rules.isNotEmpty,
-				Icon: webix.rules.isNotEmpty
-			},
+			rules,
 			on: {
 				onBeforeEditStop(state, editor, ignore) {
-					const check = (editor.getValue() !== "");
+					const value = editor.getValue();
+					const check = (value !== "" && value.length <= 15);
 					if (!ignore && !check) {
 						this.validateEditor(editor);
 						return false;
@@ -59,29 +64,13 @@ export default class SettingsConstr extends JetView {
 			view: "button",
 			value: "Add",
 			css: "webix_primary",
-			click: () => {
-				const form = this.$$("form");
-
-				if (form.validate()) {
-					const values = form.getValues();
-					this._dataBase.add(values);
-
-					webix.message("A new record has been added");
-					form.clear();
-					form.clearValidation();
-				}
-			}
+			click: () => this.addRecord()
 		};
 
 		const CancelBtn = {
 			view: "button",
 			value: "Cancel",
-			click: () => {
-				const form = this.$$("form");
-
-				form.clear();
-				form.clearValidation();
-			}
+			click: () => this.clearForm()
 		};
 
 		const Form = {
@@ -97,10 +86,7 @@ export default class SettingsConstr extends JetView {
 				{view: "text", label: `${this._label} Icon`, name: "Icon"},
 				{cols: [AddBtn, CancelBtn]}
 			],
-			rules: {
-				Value: webix.rules.isNotEmpty,
-				Icon: webix.rules.isNotEmpty
-			},
+			rules,
 			on: {
 				onChange() {
 					this.clearValidation();
@@ -129,5 +115,23 @@ export default class SettingsConstr extends JetView {
 			.then(() => {
 				this._dataBase.remove(id);
 			});
+	}
+
+	clearForm() {
+		const form = this.$$("form");
+		form.clear();
+		form.clearValidation();
+	}
+
+	addRecord() {
+		const form = this.$$("form");
+
+		if (form.validate()) {
+			const values = form.getValues();
+			this._dataBase.add(values);
+
+			webix.message("A new record has been added");
+			this.clearForm();
+		}
 	}
 }
