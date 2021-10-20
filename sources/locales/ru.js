@@ -22,4 +22,13 @@ export default {
 	"Change photo": "Сменить фото",
 	"Delete photo": "Удалить фото",
 	Cancel: "Отмена",
+	Name: "Название",
+	"Change date": "Дата изменения",
+	Size: "Размер",
+	"Upload file": "Загрузить файл",
+	Delete: "Удалить",
+	"Do you want to delete this record? Deleting cannot be undone.": "Вы действительно хотите удалить эту запись. Уданение нельзя отменить.",
+	Edit: "Изменить",
+	"Date of birth": "День рождения",
+	Location: "Адрес"
 };

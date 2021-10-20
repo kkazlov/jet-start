@@ -4,23 +4,25 @@ import filesDB from "../../models/filesDB";
 
 export default class FilesTable extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		const nameCol = {
 			id: "FileName",
-			header: "Name",
+			header: _("Name"),
 			sort: "text",
 			fillspace: 6
 		};
 
 		const changeDateCol = {
 			id: "ChangeDate",
-			header: "Change date",
+			header: _("Change date"),
 			sort: "text",
 			fillspace: 3
 		};
 
 		const sizeCol = {
 			id: "Size",
-			header: "Size",
+			header: _("Size"),
 			fillspace: 2,
 			sort: "int",
 			template: "#SizeText#"
@@ -46,7 +48,7 @@ export default class FilesTable extends JetView {
 
 		const uploadBtn = {
 			view: "uploader",
-			label: "Upload file",
+			label: _("Upload file"),
 			localId: "uploader",
 			css: "customBtn",
 			autosend: false,
@@ -74,10 +76,12 @@ export default class FilesTable extends JetView {
 	}
 
 	deleteIcon(e, id) {
+		const _ = this.app.getService("locale")._;
+
 		webix
 			.confirm({
-				title: "Delete",
-				text: "Do you want to delete this record? Deleting cannot be undone."
+				title: _("Delete"),
+				text: _("Do you want to delete this record? Deleting cannot be undone.")
 			})
 			.then(() => {
 				filesDB.remove(id);
