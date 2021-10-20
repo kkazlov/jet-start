@@ -1,8 +1,14 @@
 import {JetView} from "webix-jet";
 
-import activityTypesDB from "../../models/activityTypesDB";
+export default class SettingsConstr extends JetView {
+	constructor(app, config) {
+		super(app);
 
-export default class SettingsActivity extends JetView {
+		const {dataBase, label} = config;
+		this._dataBase = dataBase;
+		this._label = label;
+	}
+
 	config() {
 		const Table = {
 			view: "datatable",
@@ -58,7 +64,7 @@ export default class SettingsActivity extends JetView {
 
 				if (form.validate()) {
 					const values = form.getValues();
-					activityTypesDB.add(values);
+					this._dataBase.add(values);
 
 					webix.message("A new record has been added");
 					form.clear();
@@ -87,8 +93,8 @@ export default class SettingsActivity extends JetView {
 				bottomPadding: 18
 			},
 			elements: [
-				{view: "text", label: "Activity Value", name: "Value"},
-				{view: "text", label: "Activity Icon", name: "Icon"},
+				{view: "text", label: `${this._label} Value`, name: "Value"},
+				{view: "text", label: `${this._label} Icon`, name: "Icon"},
 				{cols: [AddBtn, CancelBtn]}
 			],
 			rules: {
@@ -109,8 +115,8 @@ export default class SettingsActivity extends JetView {
 
 	init() {
 		const table = this.$$("table");
-		activityTypesDB.waitData.then(() => {
-			table.data.sync(activityTypesDB);
+		this._dataBase.waitData.then(() => {
+			table.data.sync(this._dataBase);
 		});
 	}
 
@@ -121,7 +127,7 @@ export default class SettingsActivity extends JetView {
 				text: "Do you want to delete this record? Deleting cannot be undone."
 			})
 			.then(() => {
-				activityTypesDB.remove(id);
+				this._dataBase.remove(id);
 			});
 	}
 }

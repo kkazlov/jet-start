@@ -1,11 +1,22 @@
 import {JetView} from "webix-jet";
 
-import SettingsActivity from "./settings-activity";
-import SettingsStatus from "./settings-status";
+import activityTypesDB from "../../models/activityTypesDB";
+import statusesDB from "../../models/statusesDB";
+import SettingsConstr from "./settings-constr";
 
 
 export default class Settings extends JetView {
 	config() {
+		const ActivitySetting = new SettingsConstr(this.app, {
+			dataBase: activityTypesDB,
+			label: "Activity"
+		});
+
+		const StatusSetting = new SettingsConstr(this.app, {
+			dataBase: statusesDB,
+			label: "Status"
+		});
+
 		const Language = [
 			{view: "label", label: "Language"},
 			{
@@ -38,8 +49,8 @@ export default class Settings extends JetView {
 						TableTabbar,
 						{
 							cells: [
-								{$subview: SettingsActivity, id: "activity"},
-								{$subview: SettingsStatus, id: "status"}
+								{$subview: ActivitySetting, id: "activity"},
+								{$subview: StatusSetting, id: "status"}
 							]
 						}
 					]
