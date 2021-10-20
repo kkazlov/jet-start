@@ -10,7 +10,7 @@ export default class ActivitiesTable extends JetView {
 	config() {
 		const _ = this.app.getService("locale")._;
 
-		const datatable = TableView("contact", {activityTypesDB});
+		const datatable = TableView("contact", {activityTypesDB}, _);
 		const AddActivityBtn = {
 			view: "button",
 			type: "icon",
@@ -54,13 +54,15 @@ export default class ActivitiesTable extends JetView {
 	}
 
 	onDeleteIcon(id, e) {
+		const _ = this.app.getService("locale")._;
+
 		const editIcon = "far fa-trash-alt deleteIcon table-icon";
 		const className = e.target.className;
 		if (editIcon === className) {
 			webix
 				.confirm({
-					title: "Delete",
-					text: "Do you want to delete this record? Deleting cannot be undone."
+					title: _("Delete"),
+					text: _("Do you want to delete this record? Deleting cannot be undone.")
 				})
 				.then(() => {
 					activitiesDB.remove(id);

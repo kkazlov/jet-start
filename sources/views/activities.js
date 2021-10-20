@@ -8,18 +8,20 @@ import TableView from "./tableView";
 
 export default class Activities extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		const filterBtns = {
 			view: "segmented",
 			localId: "filterBtns",
 			value: "all",
 			options: [
-				{id: "all", value: "All"},
-				{id: "overdue", value: "Overdue"},
-				{id: "completed", value: "Completed"},
-				{id: "today", value: "Today"},
-				{id: "tomorrow", value: "Tomorrow"},
-				{id: "week", value: "This week"},
-				{id: "month", value: "This month"}
+				{id: "all", value: _("All")},
+				{id: "overdue", value: _("Overdue")},
+				{id: "completed", value: _("Completed")},
+				{id: "today", value: _("Today")},
+				{id: "tomorrow", value: _("Tomorrow")},
+				{id: "week", value: _("This week")},
+				{id: "month", value: _("This month")}
 			],
 			on: {
 				onAfterTabClick: id => this.onAfterTabClick(id)
@@ -30,10 +32,10 @@ export default class Activities extends JetView {
 		const addBtn = {
 			view: "button",
 			type: "icon",
-			width: 150,
+			width: 200,
 			height: 50,
 			icon: "fas fa-plus-square",
-			label: "Add activity",
+			label: _("Add activity"),
 			css: "customBtn",
 			click: () => {
 				this._popup.showWindow({mode: "add", table: "activities"});
@@ -43,7 +45,7 @@ export default class Activities extends JetView {
 		const datatable = TableView("activities", {
 			activityTypesDB,
 			contactsDB
-		});
+		}, _);
 
 		return {
 			rows: [
@@ -75,13 +77,15 @@ export default class Activities extends JetView {
 
 
 	onDeleteIcon(id, e) {
+		const _ = this.app.getService("locale")._;
+
 		const editIcon = "far fa-trash-alt deleteIcon table-icon";
 		const className = e.target.className;
 		if (editIcon === className) {
 			webix
 				.confirm({
-					title: "Delete",
-					text: "Do you want to delete this record? Deleting cannot be undone."
+					title: _("Delete"),
+					text: _("Do you want to delete this record? Deleting cannot be undone.")
 				})
 				.then(() => {
 					activitiesDB.remove(id);

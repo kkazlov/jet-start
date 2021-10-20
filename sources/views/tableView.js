@@ -1,4 +1,4 @@
-const TableView = (type, collections) => {
+const TableView = (type, collections, _) => {
 	const {activityTypesDB, contactsDB = ""} = collections;
 
 	const checkCol = {
@@ -52,7 +52,7 @@ const TableView = (type, collections) => {
 	const contactCol = {
 		id: "Contact",
 		header: [
-			"Contacts",
+			_("Contacts"),
 			{
 				content: "selectFilter",
 				compare(cellValue, filterValue, obj) {
@@ -103,9 +103,9 @@ const TableView = (type, collections) => {
 	if (type === "activities") {
 		tableColumns = [
 			checkCol,
-			{...activityTypeCol, header: ["Activity type", ...activityTypeCol.header]},
-			{...dueDateCol, header: ["Due date", ...dueDateCol.header]},
-			{...detailsCol, header: ["Details", ...detailsCol.header]},
+			{...activityTypeCol, header: [_("Activity type"), ...activityTypeCol.header]},
+			{...dueDateCol, header: [_("Due date"), ...dueDateCol.header]},
+			{...detailsCol, header: [_("Details"), ...detailsCol.header]},
 			editCol,
 			deleteCol
 		];
