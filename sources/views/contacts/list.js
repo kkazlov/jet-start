@@ -4,10 +4,12 @@ import contactsDB from "../../models/contactsDB";
 
 export default class ListView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		const Input = {
 			view: "text",
 			localId: "input",
-			placeholder: "Type to find matching contacts"
+			placeholder: _("Type to find matching contacts")
 		};
 
 		const List = {
@@ -37,7 +39,7 @@ export default class ListView extends JetView {
 			localId: "addBtn",
 			height: 40,
 			icon: "fas fa-plus-square",
-			label: "Add contact",
+			label: _("Add contact"),
 			css: "customBtn",
 			click: () => {
 				this.setParam("id", false, true);

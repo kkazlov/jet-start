@@ -6,20 +6,15 @@ import SettingsConstr from "./settings-constr";
 
 export default class Settings extends JetView {
 	config() {
-		const ActivitySetting = new SettingsConstr(this.app, {
-			dataBase: activityTypesDB,
-			label: "Activity"
-		});
+		const _ = this.app.getService("locale")._;
 
-		const StatusSetting = new SettingsConstr(this.app, {
-			dataBase: statusesDB,
-			label: "Status"
-		});
+		const ActivitySetting = new SettingsConstr(this.app, {dataBase: activityTypesDB});
+		const StatusSetting = new SettingsConstr(this.app, {dataBase: statusesDB});
 
 		const value = this.app.getService("locale").getLang();
 
 		const Language = [
-			{view: "label", label: "Language"},
+			{view: "label", label: _("Language")},
 			{
 				view: "segmented",
 				name: "lang",
@@ -37,8 +32,8 @@ export default class Settings extends JetView {
 			multiview: true,
 			value: "activity",
 			options: [
-				{id: "activity", value: "Activity types"},
-				{id: "status", value: "Contact statuses"}
+				{id: "activity", value: _("Activity types")},
+				{id: "status", value: _("Contact statuses")}
 			]
 		};
 

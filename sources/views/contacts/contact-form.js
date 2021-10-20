@@ -294,7 +294,7 @@ export default class ContactForm extends JetView {
 							})
 							.then(() => {
 								this.closeForm();
-								webix.message("Contact was updated");
+								webix.message(_("Contact was updated"));
 							});
 					}
 				}

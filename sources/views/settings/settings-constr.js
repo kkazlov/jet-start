@@ -4,12 +4,13 @@ export default class SettingsConstr extends JetView {
 	constructor(app, config) {
 		super(app);
 
-		const {dataBase, label} = config;
+		const {dataBase} = config;
 		this._dataBase = dataBase;
-		this._label = label;
 	}
 
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		const rules = {
 			Value: value => value.length <= 15 && webix.rules.isNotEmpty(value),
 			Icon: value => value.length <= 15 && webix.rules.isNotEmpty(value)
@@ -18,13 +19,13 @@ export default class SettingsConstr extends JetView {
 		const tableColumns = [
 			{
 				id: "Value",
-				header: "Value",
+				header: _("Name"),
 				fillspace: 6,
 				editor: "text"
 			},
 			{
 				id: "Icon",
-				header: "Icon",
+				header: _("Icon"),
 				fillspace: 6,
 				editor: "text"
 			},
@@ -62,14 +63,14 @@ export default class SettingsConstr extends JetView {
 
 		const AddBtn = {
 			view: "button",
-			value: "Add",
+			value: _("Add"),
 			css: "webix_primary",
 			click: () => this.addRecord()
 		};
 
 		const CancelBtn = {
 			view: "button",
-			value: "Cancel",
+			value: _("Cancel"),
 			click: () => this.clearForm()
 		};
 
@@ -78,12 +79,12 @@ export default class SettingsConstr extends JetView {
 			localId: "form",
 			elementsConfig: {
 				labelWidth: 120,
-				invalidMessage: "Enter the correct value!",
+				invalidMessage: _("Enter the correct value!"),
 				bottomPadding: 18
 			},
 			elements: [
-				{view: "text", label: `${this._label} Value`, name: "Value"},
-				{view: "text", label: `${this._label} Icon`, name: "Icon"},
+				{view: "text", label: _("Name"), name: "Value"},
+				{view: "text", label: _("Icon"), name: "Icon"},
 				{cols: [AddBtn, CancelBtn]}
 			],
 			rules,
@@ -107,10 +108,12 @@ export default class SettingsConstr extends JetView {
 	}
 
 	deleteIcon(e, id) {
+		const _ = this.app.getService("locale")._;
+
 		webix
 			.confirm({
-				title: "Delete",
-				text: "Do you want to delete this record? Deleting cannot be undone."
+				title: _("Delete"),
+				text: _("Do you want to delete this record? Deleting cannot be undone.")
 			})
 			.then(() => {
 				this._dataBase.remove(id);
@@ -124,13 +127,14 @@ export default class SettingsConstr extends JetView {
 	}
 
 	addRecord() {
+		const _ = this.app.getService("locale")._;
 		const form = this.$$("form");
 
 		if (form.validate()) {
 			const values = form.getValues();
 			this._dataBase.add(values);
 
-			webix.message("A new record has been added");
+			webix.message(_("A new record has been added"));
 			this.clearForm();
 		}
 	}
