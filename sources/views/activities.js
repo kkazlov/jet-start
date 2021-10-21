@@ -102,29 +102,28 @@ export default class Activities extends JetView {
 	}
 
 	overdueFilter(obj) {
-		const today = new Date().setHours(0, 0, 0, 0);
+		const today = webix.Date.dayStart(new Date());
 		return obj.State === "Open" && obj.Date < today;
 	}
 
 	todayFilter(obj) {
-		const today = new Date().setHours(0, 0, 0, 0);
-		return +obj.Date === +today;
+		const today = webix.Date.dayStart(new Date());
+		return webix.Date.equal(obj.Date, today);
 	}
 
-	tommorowFilter(obj) {
-		const tomorrow = +new Date().setHours(0, 0, 0, 0) + 1000 * 60 * 60 * 24;
-		return +obj.Date === tomorrow;
+	tomorrowFilter(obj) {
+		const tomorrow = webix.Date.add(new Date(), 1, "day");
+		const tomorrowStart = webix.Date.dayStart(tomorrow);
+		return webix.Date.equal(obj.Date, tomorrowStart);
 	}
 
 	weekFilter(obj) {
-		const today = new Date();
-		const date = +obj.Date;
-		const todayNoTime = +today.setHours(0, 0, 0, 0);
+		const date = obj.Date;
+		const today = webix.Date.dayStart(new Date());
 		const dayIndex = today.getDay();
-		const dayInMs = 1000 * 60 * 60 * 24;
 
-		const startWeek = todayNoTime - dayInMs * dayIndex;
-		const endWeek = todayNoTime + dayInMs * (6 - dayIndex);
+		const startWeek = webix.Date.weekStart(today);
+		const endWeek = webix.Date.add(today, 6 - dayIndex, "day");
 
 		return date >= startWeek && date <= endWeek;
 	}
@@ -165,7 +164,7 @@ export default class Activities extends JetView {
 
 			case "tomorrow":
 				table.filterByAll();
-				table.filter(obj => this.tommorowFilter(obj), "", true);
+				table.filter(obj => this.tomorrowFilter(obj), "", true);
 				break;
 
 			case "week":
@@ -205,7 +204,7 @@ export default class Activities extends JetView {
 				break;
 
 			case "tomorrow":
-				table.filter(obj => this.tommorowFilter(obj), "", true);
+				table.filter(obj => this.tomorrowFilter(obj), "", true);
 				break;
 
 			case "week":
