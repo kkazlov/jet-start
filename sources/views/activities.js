@@ -24,7 +24,7 @@ export default class Activities extends JetView {
 				{id: "month", value: _("This month")}
 			],
 			on: {
-				onAfterTabClick: id => this.onAfterTabClick(id)
+				onAfterTabClick: id => this.onActivityFilters(id)
 			},
 			css: "filterBtns"
 		};
@@ -69,7 +69,7 @@ export default class Activities extends JetView {
 			if (id) table.filterByAll();
 		});
 
-		this.on(table, "onAfterFilter", () => this.onAfterFilter());
+		this.on(table, "onAfterFilter", () => this.onActivityFilters());
 
 		this.on(table, "onItemClick", (id, e) => this.onEditIcon(id, e));
 		this.on(table, "onItemClick", (id, e) => this.onDeleteIcon(id, e));
@@ -140,78 +140,43 @@ export default class Activities extends JetView {
 		return thisYear === objYear && thisMonth === objMonth;
 	}
 
-	onAfterTabClick(id) {
+	onActivityFilters(id = "") {
 		const table = this.$$("table");
-		switch (id) {
-			case "all":
-				table.filterByAll();
-				break;
-
-			case "overdue":
-				table.filterByAll();
-				table.filter(obj => this.overdueFilter(obj), "", true);
-				break;
-
-			case "completed":
-				table.filterByAll();
-				table.filter("#State#", "Close", true);
-				break;
-
-			case "today":
-				table.filterByAll();
-				table.filter(obj => this.todayFilter(obj), "", true);
-				break;
-
-			case "tomorrow":
-				table.filterByAll();
-				table.filter(obj => this.tomorrowFilter(obj), "", true);
-				break;
-
-			case "week":
-				table.filterByAll();
-				table.filter(obj => this.weekFilter(obj), "", true);
-				break;
-
-			case "month":
-				table.filterByAll();
-				table.filter(obj => this.monthFilter(obj), "", true);
-				break;
-
-			default:
-				break;
-		}
-	}
-
-	onAfterFilter() {
 		const filterBtns = this.$$("filterBtns");
-		const table = this.$$("table");
 		const btnValue = filterBtns.getValue();
 
-		switch (btnValue) {
+		switch (id || btnValue) {
 			case "all":
+				if (id) table.filterByAll();
 				break;
 
 			case "overdue":
+				if (id) table.filterByAll();
 				table.filter(obj => this.overdueFilter(obj), "", true);
 				break;
 
 			case "completed":
+				if (id) table.filterByAll();
 				table.filter("#State#", "Close", true);
 				break;
 
 			case "today":
+				if (id) table.filterByAll();
 				table.filter(obj => this.todayFilter(obj), "", true);
 				break;
 
 			case "tomorrow":
+				if (id) table.filterByAll();
 				table.filter(obj => this.tomorrowFilter(obj), "", true);
 				break;
 
 			case "week":
+				if (id) table.filterByAll();
 				table.filter(obj => this.weekFilter(obj), "", true);
 				break;
 
 			case "month":
+				if (id) table.filterByAll();
 				table.filter(obj => this.monthFilter(obj), "", true);
 				break;
 

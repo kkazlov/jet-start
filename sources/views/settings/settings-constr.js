@@ -4,8 +4,7 @@ export default class SettingsConstr extends JetView {
 	constructor(app, config) {
 		super(app);
 
-		const {dataBase} = config;
-		this._dataBase = dataBase;
+		this._dataBase = config.dataBase;
 	}
 
 	config() {

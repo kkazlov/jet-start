@@ -17,7 +17,7 @@ export default class Settings extends JetView {
 			{view: "label", label: _("Language")},
 			{
 				view: "segmented",
-				name: "lang",
+				localId: "lang",
 				options: [
 					{id: "en", value: "EN"},
 					{id: "ru", value: "RU"}
@@ -59,7 +59,7 @@ export default class Settings extends JetView {
 
 	toggleLanguage() {
 		const langs = this.app.getService("locale");
-		const value = this.getRoot().queryView({name: "lang"}).getValue();
+		const value = this.$$("lang").getValue();
 		langs.setLang(value);
 	}
 }
