@@ -4,6 +4,14 @@ import contactsDB from "../../models/contactsDB";
 
 export default class ListView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
+		const Input = {
+			view: "text",
+			localId: "input",
+			placeholder: _("Type to find matching contacts")
+		};
+
 		const List = {
 			view: "list",
 			localId: "list",
@@ -31,7 +39,7 @@ export default class ListView extends JetView {
 			localId: "addBtn",
 			height: 40,
 			icon: "fas fa-plus-square",
-			label: "Add contact",
+			label: _("Add contact"),
 			css: "customBtn",
 			click: () => {
 				this.setParam("id", false, true);
@@ -40,12 +48,13 @@ export default class ListView extends JetView {
 		};
 
 		return {
-			rows: [List, AddContactBtn]
+			rows: [Input, List, AddContactBtn]
 		};
 	}
 
 	init() {
 		const list = this.$$("list");
+		const input = this.$$("input");
 		this.setParam("list", false, true);
 
 		contactsDB.waitData.then(() => {
@@ -53,10 +62,28 @@ export default class ListView extends JetView {
 			const initSelect = list.getFirstId();
 			list.select(initSelect);
 		});
+
+		this.on(input, "onTimedKeyPress", () => {
+			const inputValue = input.getValue().toLowerCase();
+			const matchValue = (obj, value) => obj.toLowerCase().indexOf(value) !== -1;
+
+			list.filter(({value, Company, Address, Job, Skype, Email, Website}) => {
+				const fullName = matchValue(value, inputValue);
+				const company = matchValue(Company, inputValue);
+				const address = matchValue(Address, inputValue);
+				const job = matchValue(Job, inputValue);
+				const skype = matchValue(Skype, inputValue);
+				const email = matchValue(Email, inputValue);
+				const website = matchValue(Website, inputValue);
+
+				return fullName || company || address || job || skype || email || website;
+			});
+		});
 	}
 
 	urlChange(view, url) {
 		const list = this.$$("list");
+		const input = this.$$("input");
 		const addBtn = this.$$("addBtn");
 		const listParam = url[0].params.list;
 		const idParam = url[0].params.id;
@@ -65,12 +92,22 @@ export default class ListView extends JetView {
 			list.disable();
 			list.unselect();
 			addBtn.disable();
+
+			input.disable();
+			input.setValue("");
+			list.filter();
 		}
 		else {
+			input.enable();
 			list.enable();
 			addBtn.enable();
+
 			if (listParam && listParam !== "unselect") {
 				let id;
+
+				input.setValue("");
+				list.filter();
+
 				switch (listParam) {
 					case "first":
 						id = list.getFirstId();

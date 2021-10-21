@@ -4,18 +4,10 @@ import activitiesDB from "../../models/activitiesDB";
 import contactsDB from "../../models/contactsDB";
 import filesDB from "../../models/filesDB";
 import statusesDB from "../../models/statusesDB";
-import "../../styles/info.css";
 
 export default class Info extends JetView {
 	config() {
-		const deleteRecords = (dataBase, id) => {
-			const recordsArr = dataBase.data.find(
-				obj => +obj.ContactID === +id
-			);
-			recordsArr.forEach((item) => {
-				dataBase.remove(item.id);
-			});
-		};
+		const _ = this.app.getService("locale")._;
 
 		const BtnDelete = {
 			view: "button",
@@ -23,20 +15,20 @@ export default class Info extends JetView {
 			width: 120,
 			height: 50,
 			icon: "far fa-trash-alt",
-			label: "Delete",
+			label: _("Delete"),
 			css: "customBtn",
 			click: () => {
 				webix
 					.confirm({
-						title: "Delete",
-						text: "Do you want to delete this contact? Deleting cannot be undone."
+						title: _("Delete"),
+						text: _("Do you want to delete this contact? Deleting cannot be undone.")
 					})
 					.then(() => {
 						const id = this.getParam("id", true);
 						const parentView = this.getParentView().getParentView();
 
-						deleteRecords(activitiesDB, id);
-						deleteRecords(filesDB, id);
+						this.deleteRecords(activitiesDB, id);
+						this.deleteRecords(filesDB, id);
 
 						contactsDB.remove(id);
 
@@ -51,7 +43,7 @@ export default class Info extends JetView {
 			width: 120,
 			height: 50,
 			icon: "far fa-edit",
-			label: "Edit",
+			label: _("Edit"),
 			css: "customBtn",
 			click: () => {
 				this.show("contacts.contact-form");
@@ -105,7 +97,18 @@ export default class Info extends JetView {
 		});
 	}
 
+	deleteRecords(dataBase, id) {
+		const recordsArr = dataBase.data.find(
+			obj => +obj.ContactID === +id
+		);
+		recordsArr.forEach((item) => {
+			dataBase.remove(item.id);
+		});
+	}
+
 	infoTemplate() {
+		const _ = this.app.getService("locale")._;
+
 		const template = ({
 			Photo,
 			Email,
@@ -146,22 +149,22 @@ export default class Info extends JetView {
 	
 					<div class="info__item">
 						<span class="fas fa-tag"></span>
-						<span>Job: ${Job}</span>
+						<span>${_("Job")}: ${Job}</span>
 					</div>
 	
 					<div class="info__item">
 						<span class="fas fa-briefcase"></span>
-						<span>Company: ${Company}</span>
+						<span>${_("Company")}: ${Company}</span>
 					</div>
 	
 					<div class="info__item">
 						<span class="far fa-calendar-alt"></span>
-						<span>Date of birth: ${_birthday}</span>
+						<span>${_("Date of birth")}: ${_birthday}</span>
 					</div>
 	
 					<div class="info__item">
 						<span class="fas fa-map-marker-alt"></span>
-						<span>Location: ${Address}</span>
+						<span>${_("Location")}: ${Address}</span>
 					</div>
 				</div>
 			</div>

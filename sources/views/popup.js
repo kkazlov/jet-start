@@ -6,9 +6,11 @@ import contactsDB from "../models/contactsDB";
 
 export default class Popup extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		const details = {
 			view: "textarea",
-			label: "Details",
+			label: _("Details"),
 			name: "Details",
 			height: 100
 		};
@@ -16,7 +18,7 @@ export default class Popup extends JetView {
 		const type = {
 			view: "combo",
 			localId: "typeCombo",
-			label: "Type",
+			label: _("Type"),
 			name: "TypeID",
 			options: {
 				body: {
@@ -28,7 +30,7 @@ export default class Popup extends JetView {
 
 		const contact = {
 			view: "combo",
-			label: "Contact",
+			label: _("Contact"),
 			name: "ContactID",
 			localId: "contactsCombo",
 			options: {
@@ -43,7 +45,7 @@ export default class Popup extends JetView {
 			view: "datepicker",
 			localId: "date",
 			format: "%d %M %Y",
-			label: "Date",
+			label: _("Date"),
 			value: new Date(),
 			name: "Date"
 		};
@@ -52,7 +54,7 @@ export default class Popup extends JetView {
 			view: "datepicker",
 			localId: "time",
 			type: "time",
-			label: "Time",
+			label: _("Time"),
 			format: "%H:%i",
 			value: new Date(),
 			name: "Time",
@@ -61,7 +63,7 @@ export default class Popup extends JetView {
 
 		const completed = {
 			view: "checkbox",
-			label: "Completed",
+			label: _("Completed"),
 			name: "State",
 			checkValue: "Close",
 			uncheckValue: "Open"
@@ -77,7 +79,7 @@ export default class Popup extends JetView {
 		const cancelBtn = {
 			view: "button",
 			width: 120,
-			value: "Cancel",
+			value: _("Cancel"),
 			css: "customBtn",
 			click: () => {
 				this.hideWindow();
@@ -109,7 +111,8 @@ export default class Popup extends JetView {
 					Time: webix.rules.isNotEmpty
 				},
 				elementsConfig: {
-					invalidMessage: "Enter the correct value!"
+					labelWidth: 90,
+					invalidMessage: _("Enter the correct value!")
 				},
 				on: {
 					onChange: () => {
@@ -155,6 +158,8 @@ export default class Popup extends JetView {
 	}
 
 	showWindow({id = "", mode = "add", table = "activities"}) {
+		const _ = this.app.getService("locale")._;
+
 		if (mode === "edit") {
 			this._popupType = "Edit";
 			this.getActivity(id);
@@ -163,10 +168,10 @@ export default class Popup extends JetView {
 			this._popupType = "Add";
 		}
 
-		this.$$("actionBtn").setValue(this._popupType);
+		this.$$("actionBtn").setValue(_(this._popupType));
 
 		const head = this.$$("window").getHead();
-		head.getNode().innerText = this._popupType;
+		head.getNode().innerText = _(this._popupType);
 
 		if (table === "contacts") {
 			const input = this.$$("contactsCombo");

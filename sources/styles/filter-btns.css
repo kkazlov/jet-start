@@ -1,0 +1,13 @@
+.filterBtns button,
+.filterBtns .webix_selected {
+	border-radius: 5px;
+	background: #f0f0f0;
+	color: #000;
+}
+
+.filterBtns .webix_selected,
+.filterBtns .webix_selected:hover,
+.filterBtns .webix_selected:focus {
+	border-radius: 5px;
+	background: #d3d3d3;
+}
