@@ -148,9 +148,6 @@ export default class Activities extends JetView {
 		if (id) table.filterByAll();
 
 		switch (id || btnValue) {
-			case "all":
-				break;
-
 			case "overdue":
 				table.filter(obj => this.overdueFilter(obj), "", true);
 				break;
