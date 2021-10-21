@@ -145,38 +145,33 @@ export default class Activities extends JetView {
 		const filterBtns = this.$$("filterBtns");
 		const btnValue = filterBtns.getValue();
 
+		if (id) table.filterByAll();
+
 		switch (id || btnValue) {
 			case "all":
-				if (id) table.filterByAll();
 				break;
 
 			case "overdue":
-				if (id) table.filterByAll();
 				table.filter(obj => this.overdueFilter(obj), "", true);
 				break;
 
 			case "completed":
-				if (id) table.filterByAll();
 				table.filter("#State#", "Close", true);
 				break;
 
 			case "today":
-				if (id) table.filterByAll();
 				table.filter(obj => this.todayFilter(obj), "", true);
 				break;
 
 			case "tomorrow":
-				if (id) table.filterByAll();
 				table.filter(obj => this.tomorrowFilter(obj), "", true);
 				break;
 
 			case "week":
-				if (id) table.filterByAll();
 				table.filter(obj => this.weekFilter(obj), "", true);
 				break;
 
 			case "month":
-				if (id) table.filterByAll();
 				table.filter(obj => this.monthFilter(obj), "", true);
 				break;
 
