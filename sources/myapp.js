@@ -19,7 +19,12 @@ const app = new MyApp();
 if (!BUILD_AS_MODULE) {
 	webix.ready(() => {
 		app.render();
-		app.use(plugins.Locale);
+		app.use(plugins.Locale, {
+			webix: {
+				en: "en-US",
+				ru: "ru-RU"
+			}
+		});
 		app.attachEvent("app:error:resolve", () => {
 			webix.delay(() => app.show("/top/contacts"));
 		});

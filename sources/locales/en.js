@@ -54,5 +54,5 @@ export default {
 	Time: "Time",
 	"Activity type": "Activity type",
 	"Due date": "Due date",
-	undefined: ""
+	"Do you want to delete this contact? Deleting cannot be undone.": "Do you want to delete this contact? Deleting cannot be undone."
 };

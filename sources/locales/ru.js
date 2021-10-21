@@ -54,5 +54,5 @@ export default {
 	Time: "Время",
 	"Activity type": "Вид деятельности",
 	"Due date": "Дата выполнения",
-	undefined: ""
+	"Do you want to delete this contact? Deleting cannot be undone.": "Вы действительно хотите удалить этот контакт. Уданение нельзя отменить."
 };

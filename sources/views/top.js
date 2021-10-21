@@ -7,7 +7,7 @@ export default class TopView extends JetView {
 		const header = {
 			type: "header",
 			localId: "header",
-			template: obj => `${_(obj.menuName) || ""}`,
+			template: obj => `${obj.menuName || ""}`,
 			css: "webix_header app_header"
 		};
 
@@ -38,13 +38,14 @@ export default class TopView extends JetView {
 	}
 
 	init() {
+		const _ = this.app.getService("locale")._;
 		this.use(plugins.Menu, "top:menu");
 		const menu = this.$$("menu");
 		const header = this.$$("header");
 
 		menu.attachEvent("onAfterSelect", () => {
 			const value = menu.getSelectedItem().value;
-			header.setValues({menuName: value});
+			header.setValues({menuName: _(value)});
 		});
 	}
 }
